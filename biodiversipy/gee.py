@@ -4,10 +4,10 @@ from biodiversipy.utils import merge_dfs
 from biodiversipy.params import coords_germany
 
 # Name of directory containing input files
-input_dir = 'wc2.1_30s_bio'
+input_dir = 'USGS_SRTMGL1_003'
 
 # Filename of the resulting output
-file_name_out = 'wc2.1_30s_bio_germany.csv'
+file_name_out = 'USGS_SRTMGL1_003_germany.csv'
 
 if __name__ == '__main__':
     # set absolute paths
@@ -18,8 +18,7 @@ if __name__ == '__main__':
     data = merge_dfs(
         dir_path=path_data,
         coords=coords_germany,
-        sort_fn=lambda f: int(''.join(filter(str.isdigit, f))),
-        column_name_extractor=lambda file: re.findall('bio_\d+', file)[0])
+        column_name_extractor=lambda file: re.findall('germany_(\w+).tif', file)[0])
 
     path_output = os.path.join(root, 'raw_data')
     data.to_csv(os.path.join(path_output, file_name_out), index=False)

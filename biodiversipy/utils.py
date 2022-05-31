@@ -10,7 +10,7 @@ def tif_to_df(file_path, plot=False, coords=False, column_name='val'):
     Function for cleaning one of the 19 worldclim datasets.
     '''
     dataarray = rxr.open_rasterio(file_path)
-    df = dataarray[0].to_pandas().head(100)
+    df = dataarray[0].to_pandas()
 
     if coords:
         # subsetting based on coords dictionary

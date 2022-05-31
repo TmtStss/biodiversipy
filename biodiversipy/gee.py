@@ -1,4 +1,5 @@
 import os
+import re
 from biodiversipy.utils import merge_dfs
 from biodiversipy.params import coords_germany
 
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     data = merge_dfs(
         dir_path=path_data,
         coords=coords_germany,
-        column_name_extractor=lambda file: file)
+        column_name_extractor=lambda file: re.findall('germany_(\w+).tif', file)[0])
 
     path_output = os.path.join(root, 'raw_data')
     data.to_csv(os.path.join(path_output, file_name_out), index=False)

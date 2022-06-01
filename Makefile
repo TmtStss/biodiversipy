@@ -54,5 +54,12 @@ pypi_test:
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
+# ----------------------------------
+#      MODEL
+# ----------------------------------
+
+run_locally:
+	@python biodiversipy/main.py
+
 soilgrid_download:
 	@python scripts/soilgrid_download.py

@@ -185,3 +185,5 @@ def append_features(occurences_path, features, from_csv=True):
                                  how='inner')
 
     df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+    return df

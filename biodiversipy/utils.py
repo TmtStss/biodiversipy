@@ -6,6 +6,7 @@ from os import path
 from biodiversipy.params import coords_germany
 
 import rioxarray as rxr
+import janitor
 
 def in_germany(coords_germany, lat, lon):
     """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
@@ -158,3 +159,27 @@ def clean_occurences(csv, n = 0):
     filename = 'metadata' + suffix + '.csv'
     destination_path = path.join(raw_data_path,'gbif', filename)
     metadata.to_csv(destination_path, index=False)
+
+def append_features(occurences_path, features, from_csv=True):
+    '''
+    Appends features to a given occurences dataset.
+    Occurences can either be a path to a csv-file or a dictionary containing
+    latitude and longitude. In the latter case the csv-flag must be set to False
+    '''
+    if from_csv:
+        occurences = pd.read_csv(occurences_path)
+    else:
+        occurences = pd.DataFrame(occurences_path)
+
+    features = pd.DataFrame(features)
+
+    df = occurences.conditional_join(features,
+                                 ('latitude', 'lat_lower', '>='),
+                                 ('latitude', 'lat_upper', '<'),
+                                 ('longitude', 'lon_lower', '>='),
+                                 ('longitude', 'lon_upper', '<'),
+                                 how='inner')
+
+    df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+    return df

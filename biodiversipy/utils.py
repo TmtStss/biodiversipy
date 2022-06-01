@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 from os import path
 from biodiversipy.params import coords_germany
 
@@ -23,19 +24,6 @@ def in_germany(coords_germany, lat, lon):
     elif lon < coords_germany['lon_lower']:
         return False
     return True
-
-# SoilGrid
-
-from owslib.wcs import WebCoverageService
-
-# OS
-
-import os
-from os.path import exists
-from os import listdir
-
-
-
 
 def tif_to_df(file_path, plot=False, coords=False, column_name='val'):
     '''

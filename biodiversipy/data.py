@@ -1,6 +1,8 @@
 import pandas as pd
+
 from os import path
 from sys import argv, exit
+
 from biodiversipy.utils import merge_dfs, append_features
 from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
@@ -55,6 +57,16 @@ def get_complete_occurrences(to_csv=True):
         df.to_csv(output_path, index=False)
 
     return df
+
+def get_data():
+    # TODO implement get_data
+    return pd.DataFrame({
+        'lat': [1.1, 2.2, 3.3],
+        'lon': [2.2, 3.3, 4.4],
+        'species': ['palm tree', 'philodendron', 'oak'],
+        'feature1': [123, 321, 456],
+        'feature2': [456, 123, 321],
+    })
 
 if __name__ == '__main__':
 

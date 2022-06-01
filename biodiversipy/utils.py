@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 from os import path
 from biodiversipy.params import coords_germany
+from sklearn.feature_extraction.text import CountVectorizer
 
 #RXR
 
@@ -132,8 +133,8 @@ def clean_occurences(csv, n = 0):
        'month', 'year', 'taxonKey', 'license']
     data_cleaned = data[selected_columns]
 
-    # Drop duplicates based on lat, lon, scientificName
-    data_cleaned = data_cleaned.drop_duplicates(subset = ['decimalLatitude', 'decimalLongitude', 'scientificName'], keep = 'first')
+    # Drop duplicates based on lat, lon, taxonKey
+    data_cleaned = data_cleaned.drop_duplicates(subset = ['decimalLatitude', 'decimalLongitude', 'taxonKey'], keep = 'first')
 
     # Rename coordinates column
     data_cleaned = data_cleaned.rename(columns = {'decimalLatitude': 'latitude', 'decimalLongitude': 'longitude'})
@@ -150,9 +151,10 @@ def clean_occurences(csv, n = 0):
 
     # Splitting occurences data and metadata
     gbifID = ['gbifID']
-    col = ['latitude', 'longitude', 'scientificName']
-    data_final = data_cleaned[gbifID + col]
-    metadata = data_cleaned.drop(columns = col)
+    taxonKey = ['taxonKey']
+    coordinates = ['latitude', 'longitude']
+    data_final = data_cleaned[gbifID + coordinates + taxonKey]
+    metadata = data_cleaned.drop(columns = coordinates)
 
     # Write occurences csv
     filename = 'occurences' + suffix + '.csv'
@@ -187,3 +189,36 @@ def append_features(occurences_path, features, from_csv=True):
     df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
 
     return df
+
+def encode_taxonKey(dataset):
+    """Takes an occurence DataFrame or csv as input and outputs a DataFrame with the species encoded per unique location"""
+    if isinstance(dataset, pandas.core.frame.DataFrame):
+        data = dataset
+    else:
+        data = pd.read_csv(dataset)
+
+    # Create a DataFrame with a coordinates column (latitude, longitude)
+    coordinates = data.copy()
+    coordinates['coordinates'] = coordinates.apply(lambda row: (row.latitude, row.longitude), axis = 1)
+
+    # Convert taxonKey to string for later vectorizing
+    coordinates['taxonKey'] = coordinates['taxonKey'].astype('string')
+
+    # Group by coordinates and list the taxonKey's
+    grouped = coordinates.groupby(['coordinates'])['taxonKey'].apply(list)
+    grouped = pd.DataFrame(grouped)
+
+    # Format taxonKey Pandas Series for vectorizing
+    temp = grouped['taxonKey'].map(lambda x: ' '.join(x))
+    temp = temp.to_list()
+
+    # Initialize CountVectorizer and apply it to the taxonKey's
+    vectorizer = CountVectorizer(tokenizer=lambda txt: txt.split())
+    temp = vectorizer.fit_transform(temp)
+
+    # Merging output of CountVectorizer with latitude and longitude data
+    coordinates.reset_index(inplace=True, drop = True)
+    merged = coordinates.join(temp)
+    merged = merged.drop(columns = ['gbifID', 'taxonKey', 'coordinates'])
+
+    return merged

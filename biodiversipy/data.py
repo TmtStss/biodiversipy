@@ -1,12 +1,13 @@
 from os import path
 from sys import argv, exit
-from biodiversipy.utils import merge_dfs
+from biodiversipy.utils import merge_dfs, append_features
 from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
 
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
+occurrences_path = path.join(raw_data_path, 'gbif', 'occurences_1k.csv')
 
-def get_tif_data(source, to_csv=True):
+def get_tif_data(source, to_csv=True, from_csv=True):
     '''Extract data from tif files'''
     print(f"Extracting data for {source['name']}...")
     source_path = path.join(raw_data_path, source['id'])
@@ -26,7 +27,14 @@ def get_tif_data(source, to_csv=True):
         output_path = path.join(raw_data_path, output_filename)
         data.to_csv(output_path, index=False)
 
-    return data
+    full_data = append_features(occurrences_path, data, from_csv)
+
+    if (to_csv):
+        output_filename = f"occurences_{source['name']}_germany.csv"
+        output_path = path.join(raw_data_path, output_filename)
+        full_data.to_csv(output_path, index=False)
+
+    return full_data
 
 if __name__ == '__main__':
 

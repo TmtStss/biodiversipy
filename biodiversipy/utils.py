@@ -64,22 +64,22 @@ def tif_to_df(file_path, plot=False, coords=False, column_name='val'):
 
     return df
 
-def merge_dfs(dir_path, coords=False, sort_fn=None, column_name_extractor=lambda file: file):
+def merge_dfs(source_path, coords=False, file_sort_fn=None, column_name_extractor=lambda file: file):
     '''
     Wrapper for get_worldclim_data(). Given a directory, it cleans and merges
     all datasets in that directory.
     Description of each bioclimatic variable can be found here: https://worldclim.org/data/bioclim.html
     '''
     # get all files in directory
-    files = os.listdir(dir_path)
-    files.sort(key=sort_fn)
+    files = os.listdir(source_path)
+    files.sort(key=file_sort_fn)
 
     data = {}
 
     # clean each dataset
     for file in files:
         print(file)
-        file_name = os.path.join(dir_path, file)
+        file_name = os.path.join(source_path, file)
         column_name = column_name_extractor(file)
         df = tif_to_df(file_name, plot=False, coords=coords, column_name=column_name)
         data[column_name] = df

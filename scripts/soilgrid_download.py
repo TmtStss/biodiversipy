@@ -1,3 +1,5 @@
+from biodiversipy.params import coords_germany
+
 #Standard
 
 from urllib.error import HTTPError
@@ -9,7 +11,6 @@ from owslib.wcs import WebCoverageService
 
 # OS
 
-from os.path import exists
 from os import path
 
 #data path
@@ -22,7 +23,6 @@ def data_collector(properties_list):
 
     '''
     Function for downloading tiff files for every layer of every soilgrid feature.
-    Stores in: '../raw_data/{layer_name}.tif'.
     Returns nothing.
     Takes 20 minutes to run on my laptop.
     '''
@@ -39,10 +39,10 @@ def data_collector(properties_list):
 
     # Germany bbox
 
-    lon_min = 5.7
-    lat_min = 47.1
-    lon_max = 15.4
-    lat_max = 55.1
+    lon_min = coords_germany['lon_lower']
+    lat_min = coords_germany['lat_lower']
+    lon_max = coords_germany['lon_upper']
+    lat_max = coords_germany['lat_upper']
 
     bbox = (lon_min, lat_min, lon_max, lat_max)
 
@@ -60,23 +60,18 @@ def data_collector(properties_list):
 
         # Get only the mean values for each layer (and not the quartiles, median, etc.)
 
-        mean_list = []
-
-        for key in list_of_keys:
-
-            if key.endswith('mean'):
-                mean_list.append(key)
+        mean_list = [key for key in list_of_keys if key.endswith('mean')]
 
         # downloads data
 
         for layer in mean_list:
 
-            print (layer + ' downloaded successfully')
+            print (layer + ' attempting download')
 
             # See if its already downloaded before an error occured:
             layer_path = path.join(raw_data_path, layer + '.tif')
 
-            if exists(layer_path) == False:
+            if not path.exists(layer_path):
 
                 # Calls the server
                 try:
@@ -94,6 +89,9 @@ def data_collector(properties_list):
 
                 with open(layer_path, 'wb') as file:
                     file.write(response.read())
+
+            print (layer + ' downloaded successfully')
+
 
 properties_list = ['bdod', 'cec', 'cfvo', 'clay', 'nitrogen', 'phh2o', 'sand', 'silt', 'soc', 'ocd', 'ocs']
 

@@ -22,17 +22,16 @@ def get_tif_data(source, to_csv=True, from_csv=True):
         file_sort_fn=source['file_sort_fn'],
         column_name_extractor=source['column_name_extractor'])
 
-    if (to_csv):
-        output_filename = f"{source['id']}_germany.csv"
-        output_path = path.join(raw_data_path, output_filename)
-        data.to_csv(output_path, index=False)
-
     full_data = append_features(occurrences_path, data, from_csv)
 
     if (to_csv):
-        output_filename = f"occurences_{source['name']}_germany.csv"
-        output_path = path.join(raw_data_path, output_filename)
-        full_data.to_csv(output_path, index=False)
+        feature_output_filename = f"{source['id']}_germany.csv"
+        feature_output_path = path.join(raw_data_path, feature_output_filename)
+        data.to_csv(feature_output_path, index=False)
+
+        occurrences_output_filename = f"occurences_{source['name']}_germany.csv"
+        occurrences_output_path = path.join(raw_data_path, occurrences_output_filename)
+        full_data.to_csv(occurrences_output_path, index=False)
 
     return full_data
 

@@ -1,5 +1,6 @@
 #Standard
 
+from urllib.error import HTTPError
 import numpy as np
 
 # SoilGrid
@@ -9,6 +10,11 @@ from owslib.wcs import WebCoverageService
 # OS
 
 from os.path import exists
+from os import path
+
+#data path
+
+raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data','soilgrid_tiffs')
 
 # Function to download data in seperate tiff files:
 
@@ -65,9 +71,12 @@ def data_collector(properties_list):
 
         for layer in mean_list:
 
-            # See if its already downloaded before an error occured:
+            print (layer + ' downloaded successfully')
 
-            if exists(f'../raw_data/{layer}.tif') == False:
+            # See if its already downloaded before an error occured:
+            layer_path = path.join(raw_data_path, layer + '.tif')
+
+            if exists(layer_path) == False:
 
                 # Calls the server
                 try:
@@ -83,5 +92,9 @@ def data_collector(properties_list):
 
                 # Downloads the data
 
-                with open(f'../raw_data/{layer}.tif', 'wb') as file:
+                with open(layer_path, 'wb') as file:
                     file.write(response.read())
+
+properties_list = ['bdod', 'cec', 'cfvo', 'clay', 'nitrogen', 'phh2o', 'sand', 'silt', 'soc', 'ocd', 'ocs']
+
+data_collector(properties_list)

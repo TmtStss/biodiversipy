@@ -12,5 +12,11 @@ data_sources = {
         'name': 'gee',
         'file_sort_fn': None,
         'column_name_extractor': lambda file: re.findall('germany_(\w+).tif', file)[0],
+    },
+    'soilgrids': {
+        'id': 'soilgrid_tiffs',
+        'name': 'soilgrids',
+        'file_sort_fn': None,
+        'column_name_extractor': lambda file: re.findall('^.*(?=(_mean\.tif))', file)[0]
     }
 }

@@ -53,3 +53,6 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+make_soilgrid_download:
+	@python scripts/soilgrid_download.py

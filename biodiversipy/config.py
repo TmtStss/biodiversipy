@@ -17,6 +17,6 @@ data_sources = {
         'id': 'soilgrid_tiffs',
         'name': 'soilgrids',
         'file_sort_fn': None,
-        'column_name_extractor': lambda file: re.findall('^.*(?=(_mean\.tif))', file)[0]
+        'column_name_extractor': lambda file: re.findall('(^.*)(?=_mean\.tif)', file)[0]
     }
 }

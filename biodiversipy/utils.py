@@ -1,9 +1,13 @@
-import os
+#Standard
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 from os import path
 from biodiversipy.params import coords_germany
+
+#RXR
 
 import rioxarray as rxr
 import janitor
@@ -181,5 +185,3 @@ def append_features(occurences_path, features, from_csv=True):
                                  how='inner')
 
     df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
-
-    return df

@@ -29,6 +29,7 @@ def get_tif_data(source, to_csv=True):
     return data
 
 if __name__ == '__main__':
+
     if len(argv) == 1:
         for source in data_sources.values():
             get_tif_data(source)

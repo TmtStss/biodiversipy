@@ -2,8 +2,23 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from os import path
+from biodiversipy.params import coords_germany
 
 import rioxarray as rxr
+
+def in_germany(coords_germany, lat, lon):
+    """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
+
+    if lat > coords_germany['lat_upper']:
+        return False
+    elif lat < coords_germany['lat_lower']:
+        return False
+    elif lon > coords_germany['lon_upper']:
+        return False
+    elif lon < coords_germany['lon_lower']:
+        return False
+    return True
 
 def tif_to_df(file_path, plot=False, coords=False, column_name='val'):
     '''
@@ -95,3 +110,51 @@ def merge_dfs(source_path, coords=False, file_sort_fn=None, column_name_extracto
         i += 1
 
     return df
+
+def clean_occurences(csv, n = 0):
+    """Cleans a csv as downloaded from GBIF. Samples n rows. Outputs 2 csv files (occurences and metadata)."""
+
+    # Define source path
+    raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
+    source_path = path.join(raw_data_path, 'gbif', csv)
+
+    # Load data into pd.DataFrame
+    data = pd.read_csv(source_path, sep = '\t', low_memory = False)
+
+    # Keep useful columns
+    selected_columns = ['gbifID', 'datasetKey', 'kingdom', 'phylum', 'class',
+       'order', 'family', 'genus', 'species', 'scientificName', 'decimalLatitude', 'decimalLongitude', 'day',
+       'month', 'year', 'taxonKey', 'license']
+    data_cleaned = data[selected_columns]
+
+    # Drop duplicates based on lat, lon, scientificName
+    data_cleaned = data_cleaned.drop_duplicates(subset = ['decimalLatitude', 'decimalLongitude', 'scientificName'], keep = 'first')
+
+    # Rename coordinates column
+    data_cleaned = data_cleaned.rename(columns = {'decimalLatitude': 'latitude', 'decimalLongitude': 'longitude'})
+
+    # Drop observations outside the bounding box coordinates of Germany
+    mask_germany = data_cleaned.apply(lambda row: in_germany(coords_germany, row.latitude, row.longitude), axis = 1)
+    data_cleaned = data_cleaned[mask_germany]
+
+    # Sample n rows
+    suffix = ''
+    if n:
+        data_cleaned = data_cleaned.sample(n)
+        suffix = '_' + str(n)
+
+    # Splitting occurences data and metadata
+    gbifID = ['gbifID']
+    col = ['latitude', 'longitude', 'scientificName']
+    data_final = data_cleaned[gbifID + col]
+    metadata = data_cleaned.drop(columns = col)
+
+    # Write occurences csv
+    filename = 'occurences' + suffix + '.csv'
+    destination_path = path.join(raw_data_path,'gbif', filename)
+    data_final.to_csv(destination_path, index=False)
+
+    # Write metadata csv
+    filename = 'metadata' + suffix + '.csv'
+    destination_path = path.join(raw_data_path,'gbif', filename)
+    metadata.to_csv(destination_path, index=False)

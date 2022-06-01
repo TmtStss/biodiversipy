@@ -1,3 +1,4 @@
+import pandas as pd
 from os import path
 from sys import argv, exit
 from biodiversipy.utils import merge_dfs, append_features
@@ -26,14 +27,34 @@ def get_tif_data(source, to_csv=True, from_csv=True):
 
     if (to_csv):
         feature_output_filename = f"{source['id']}_germany.csv"
-        feature_output_path = path.join(raw_data_path, feature_output_filename)
+        feature_output_path = path.join(raw_data_path, 'output', 'features', feature_output_filename)
         data.to_csv(feature_output_path, index=False)
 
-        occurrences_output_filename = f"occurences_{source['name']}_germany.csv"
-        occurrences_output_path = path.join(raw_data_path, occurrences_output_filename)
+        occurrences_output_filename = f"occurrences_{source['name']}_germany.csv"
+        occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_output_filename)
         full_data.to_csv(occurrences_output_path, index=False)
 
     return full_data
+
+def get_complete_occurrences(to_csv=True):
+    '''
+    Function that merges each of dataset specified in the config.py file
+    containing occurrences and different features into one big dataset.
+    '''
+    for i, key in enumerate(data_sources.keys()):
+        input_path = path.join(raw_data_path, 'output', 'occurrences', f"occurrences_{data_sources[key]['name']}_germany.csv")
+        if i == 0:
+            df = pd.read_csv(input_path)
+        else:
+            df_tmp = pd.read_csv(input_path)
+            df = df.merge(df_tmp, how='inner', on=['gbifID', 'latitude', 'longitude', 'scientificName'])
+
+    if to_csv:
+        output_filename = occurrences_path.split('/')[-1].split('.csv')[0]
+        output_path = path.join(raw_data_path, 'output', 'occurrences', output_filename + '_features.csv')
+        df.to_csv(output_path, index=False)
+
+    return df
 
 if __name__ == '__main__':
 
@@ -50,3 +71,4 @@ if __name__ == '__main__':
         exit(0)
 
     get_tif_data(data_sources[source_name])
+    get_complete_occurrences(to_csv=True)

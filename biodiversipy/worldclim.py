@@ -1,10 +1,12 @@
 import os
+from pickle import FALSE
 import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 import rioxarray as rxr
+import janitor
 
 # Coordinates for Germany to subset data
 coords_germany = {'lon_lower': 5.7,
@@ -14,10 +16,26 @@ coords_germany = {'lon_lower': 5.7,
                  }
 
 # Name of directory containing input files
-input_dir = 'wc2.1_30s_bio'
+dirname_worldclim_input = 'wc2.1_30s_bio'
 
-# Filename of the resulting output
-file_name_out = 'wc2.1_30s_bio_germany.csv'
+# Filename of the resulting output files with bioclimatic features and these
+# appended to occurences
+filename_worldclim_output = 'wc2.1_30s_bio_germany.csv'
+filename_occurences_input = 'occurences.csv'
+filename_occurences_output = filename_occurences_input.strip('.csv') + '_worldclim.csv'
+
+# dummy to get worldclim
+GET_WORLDCLIM = False
+
+# set absolute paths
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+path_worldclim_input = os.path.join(root, 'raw_data', dirname_worldclim_input)
+path_worldclim_output = os.path.join(root, 'raw_data', filename_worldclim_output)
+
+path_occurences_input = os.path.join(root, 'biodiversipy', 'data', 'gbif', filename_occurences_input)
+path_occurences_output = os.path.join(root, 'raw_data', filename_occurences_output)
+
 
 def clean_worldclim_data(file_path, plot=False, coords=False, val='val'):
     '''
@@ -111,13 +129,37 @@ def merge_worldclim_data(dir_path='../raw_data/wc2.1_30s_bio/', coords=False):
 
     return df
 
+def append_worldclim_features(occurences, csv=True, bioclim_path='../raw_data/wc2.1_30s_bio_germany.csv'):
+    '''
+    Appends 19 bioclimatic features to a given occurences dataset. occurences can either be a path to a
+    csv-file or a dictionary containing latitude and longitude. In the latter case the csv-flag must be
+    set to False
+    '''
+    if csv:
+        occurences = pd.read_csv(occurences)
+    else:
+        occurences = pd.DataFrame(occurences)
+
+    bioclim_vars = pd.read_csv(bioclim_path)
+
+    df = occurences.conditional_join(bioclim_vars,
+                                 ('latitude', 'lat_lower', '>='),
+                                 ('latitude', 'lat_upper', '<'),
+                                 ('longitude', 'lon_lower', '>='),
+                                 ('longitude', 'lon_upper', '<'),
+                                 how='inner')
+
+    df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+    return df
+
+
 if __name__ == '__main__':
-    # set absolute paths
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path_data = os.path.join(root, 'raw_data', input_dir)
-
     # clean and save data from raw_data folder
-    data = merge_worldclim_data(dir_path=path_data, coords=coords_germany)
+    if GET_WORLDCLIM:
+        worldclim_data = merge_worldclim_data(dir_path=path_worldclim_input, coords=coords_germany)
+        worldclim_data.to_csv(path_worldclim_output, index=False)
 
-    path_output = os.path.join(root, 'raw_data')
-    data.to_csv(os.path.join(path_output, file_name_out), index=False)
+    # append data to occurences and save the resulting output
+    occurences_data = append_worldclim_features(path_occurences_input, csv=True, bioclim_path=path_worldclim_output)
+    occurences_data.to_csv(path_occurences_output)

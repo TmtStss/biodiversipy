@@ -5,12 +5,32 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from os import path
+from time import time
 from biodiversipy.params import coords_germany
 
 #RXR
 
 import rioxarray as rxr
 import janitor
+
+def get_error(y_pred, y_true):
+    # TODO something with y_pred and y_true
+    pass
+
+def simple_time_tracker(method):
+    '''Time tracking decorator'''
+    def timed(*args, **kw):
+        ts = time()
+        result = method(*args, **kw)
+        te = time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts))
+        else:
+            print(method.__name__, round(te - ts, 2))
+        return result
+
+    return timed
 
 def in_germany(coords_germany, lat, lon):
     """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""

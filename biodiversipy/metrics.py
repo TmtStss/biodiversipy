@@ -28,7 +28,7 @@ def compute_accuracy(y_true, y_pred, t_min):
     temp = y_pred[y_true == 1].applymap(lambda x: 1 if x >= t_min else 0)
     return temp.values.sum()/(N*C)
 
-def custom_metric(y_true, y_pred, K, rate, t):
+def custom_metric(y_true, y_pred, K, rate=0.99, t=1):
     t_min, average = find_t_min(y_true, y_pred, K, rate, t)
     accuracy = compute_accuracy(y_true, y_pred, t_min)
     return t_min, average, accuracy

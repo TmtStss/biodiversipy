@@ -15,8 +15,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from biodiversipy.encoders import SomeTransformer
+from biodiversipy.metrics import custom_metric
 from biodiversipy.params import MLFLOW_EXPERIMENT_BASE, MLFLOW_URI, ESTIMATORS
-from biodiversipy.utils import get_error, simple_time_tracker
+from biodiversipy.utils import simple_time_tracker
 
 class Trainer(object):
     ESTIMATOR = "SVC" # TODO set correct default
@@ -83,8 +84,6 @@ class Trainer(object):
         print(colored(f"train error: {train_error} || val error: {val_error}", "blue"))
 
     def compute_error(self, X_test, y_test, show=False):
-        # TODO define custom metric
-
         if self.pipeline is None:
             raise ("Cannot evaluate an empty pipeline")
 
@@ -95,7 +94,7 @@ class Trainer(object):
             res["pred"] = y_pred
             print(colored(res.sample(5), "blue"))
 
-        err = get_error(y_pred, y_test)
+        err = custom_metric(y_test, y_pred)
         return round(err, 3)
 
     def save_model(self):

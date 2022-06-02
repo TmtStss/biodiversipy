@@ -45,3 +45,6 @@ OWSLib==0.25.0
 
 # data manipulation
 pyjanitor==0.23.1
+
+# bot
+python-telegram-bot==20.0a0

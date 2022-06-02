@@ -1,13 +1,18 @@
 import pandas as pd
 import numpy as np
 
+from tensorflow import reduce_sum
+
 def compute_average(y_true, y_pred, t):
     """Returns the average number of species observed correctly predicted given a threshold value t"""
     assert t <= 1
     assert t >= 0
     N, C = y_pred.shape
-    temp = y_pred[y_true == 1].applymap(lambda x: 1 if x >= t else 0)
-    average = temp.values.sum()/N
+    f = lambda x: 1 if x >= t else 0
+    temp = f(y_pred[y_true == 1])
+
+    print(temp)
+    average = reduce_sum(temp) / N
     return average
 
 def find_t_min(y_true, y_pred, K, rate, t):
@@ -25,10 +30,14 @@ def find_t_min(y_true, y_pred, K, rate, t):
 
 def compute_accuracy(y_true, y_pred, t_min):
     N, C = y_pred.shape
-    temp = y_pred[y_true == 1].applymap(lambda x: 1 if x >= t_min else 0)
-    return temp.values.sum()/(N*C)
+    f = lambda x: 1 if x >= t_min else 0
+    temp = f(y_pred[y_true == 1])
 
-def custom_metric(y_true, y_pred, K, rate=0.99, t=1):
+    return reduce_sum(temp) / (N*C)
+
+def custom_metric(y_true, y_pred, K=2, rate=0.99, t=1):
+    print('y_true', y_true)
+    print('y_pred', y_pred)
     t_min, average = find_t_min(y_true, y_pred, K, rate, t)
     accuracy = compute_accuracy(y_true, y_pred, t_min)
     return t_min, average, accuracy

@@ -3,15 +3,33 @@ import pandas as pd
 from os import path
 from sys import argv, exit
 
-from biodiversipy.utils import merge_dfs, append_features
+from biodiversipy.utils import merge_dfs, append_features, clean_occurrences, encode_taxonKey, get_suffix
 from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
 
-raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
-occurrences_file = 'occurences_1k'
-data_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_features.csv')
+# Number of samples
+N = 1000
 
-occurrences_path = path.join(raw_data_path, 'gbif', occurrences_file + '.csv')
+# File paths
+raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
+data_path = path.join(path.dirname(__file__), 'data', 'occurrences_1k_features.csv')
+
+occurrences_file = 'coordinates' + get_suffix(N)
+occurrences_path = path.join(raw_data_path, 'gbif', \
+    occurrences_file.replace('coordinates', 'occurrences'), occurrences_file + '.csv')
+
+
+def get_gbif_data(csv_file='germany.csv', n=N):
+    '''Clean and encode raw gbif data'''
+    print(f"Cleaning occurrences data...")
+    clean_occurrences(raw_data_path, csv_file, n, coords_germany)
+
+    print(f"Encoding taxonKey...")
+    merged, coordinates = encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True)
+
+    assert len(coordinates) <= N
+
+    return merged, coordinates
 
 features_path = path.join(path.dirname(__file__), 'data', 'coordinates_1k_features.csv')
 target_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_encoded.csv')
@@ -40,7 +58,7 @@ def get_tif_data(source, to_csv=True, from_csv=True):
 
 def get_features(source, to_csv=True, from_csv=True):
     '''Append features to occurrences'''
-    print(f"Appending features to occurrences for {source['name']}...")
+    print(f"Appending {source['name']} features to occurrences...")
     feature_filename = f"{source['id']}_germany.csv"
     feature_path = path.join(raw_data_path, 'output', 'features', feature_filename)
 
@@ -62,6 +80,7 @@ def get_complete_occurrences(to_csv=True):
     Merge each of dataset specified in the config.py file containing occurrences
     and different features into one big dataset.
     '''
+    print("Merging features")
     for i, key in enumerate(data_sources.keys()):
         input_path = path.join(raw_data_path, 'output', 'occurrences', f"{occurrences_file}_{data_sources[key]['name']}_germany.csv")
         if i == 0:
@@ -83,10 +102,11 @@ def get_data():
     return X, y
 
 if __name__ == '__main__':
+    get_gbif_data(csv_file='germany.csv', n=N)
 
     if len(argv) == 1:
         for key, source in data_sources.items():
-            get_tif_data(source)
+            #get_tif_data(source)
             get_features(source)
 
         get_complete_occurrences(to_csv=True)

@@ -8,9 +8,11 @@ from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
 
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
-data_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_features.csv')
 occurrences_file = 'occurences_1k'
 occurrences_path = path.join(raw_data_path, 'gbif', occurrences_file + '.csv')
+
+features_path = path.join(path.dirname(__file__), 'data', 'coordinates_1k_features.csv')
+target_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_encoded.csv')
 
 def get_tif_data(source, to_csv=True, from_csv=True):
     '''Extract data from tif files'''
@@ -72,15 +74,11 @@ def get_complete_occurrences(to_csv=True):
 
     return df
 
-X_COLUMNS = ['a', 'list', 'of', 'column', 'names']
-Y_COLUMNS = ['another', 'list', 'of', 'column', 'names']
-
 def get_data():
-    df = pd.read_csv(data_path)
-    X_train = df[X_COLUMNS]
-    y_train = df[Y_COLUMNS]
+    X = pd.read_csv(features_path)
+    y = pd.read_csv(target_path)
 
-    return df, X_train, y_train
+    return X, y
 
 if __name__ == '__main__':
 

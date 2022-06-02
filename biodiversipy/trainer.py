@@ -20,7 +20,7 @@ from biodiversipy.params import MLFLOW_EXPERIMENT_BASE, MLFLOW_URI, ESTIMATORS
 from biodiversipy.utils import simple_time_tracker
 
 class Trainer(object):
-    ESTIMATOR = "SVC" # TODO set correct default
+    ESTIMATOR = "svc" # TODO set correct default
     VERSION = "0.1"
 
     def __init__(self, X, y, **kwargs):
@@ -39,19 +39,19 @@ class Trainer(object):
 
         # MLFlow
         self.mf_experiment_name = f"{MLFLOW_EXPERIMENT_BASE} {self.estimator} v{self.version}"
-        self.log_estimator_params()
+        #self.log_estimator_params()
         self.log_kwargs_params()
         self.log_machine_specs()
 
     def set_pipeline(self):
         """defines the pipeline as a class attribute"""
         some_pipe = Pipeline([
-            ('some_transformer', SomeTransformer()),
+            ('some_transformer', SomeTransformer('some_param')),
             ('stdscaler', StandardScaler())
         ])
 
         some_other_pipe = Pipeline([
-            ('some_other_transformer', SomeTransformer()),
+            ('some_other_transformer', SomeTransformer('some_param')),
             ('ohe', OneHotEncoder(handle_unknown='ignore'))
         ])
 
@@ -141,7 +141,7 @@ class Trainer(object):
             self.mlflow_client.log_metric(self.mlflow_run.info.run_id, key, value)
 
     def log_estimator_params(self):
-        reg = self.get_estimator()
+        reg = self.Estimator
         self.mlflow_log_param('estimator_name', reg.__class__.__name__)
         params = reg.get_params()
         for k, v in params.items():

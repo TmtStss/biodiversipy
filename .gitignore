@@ -9,3 +9,4 @@ raw_data/
 .env
 *.log
 !occurences_*.csv
+model.joblib

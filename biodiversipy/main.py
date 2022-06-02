@@ -13,9 +13,7 @@ if __name__ == "__main__":
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
     print("############   Loading Data   ############")
-    df = get_data()
-    X_train = df.drop("some_column", axis=1)
-    y_train = df["some_column"]
+    df, X_train, y_train = get_data()
 
     print(f"shape: {X_train.shape}")
     print(f"size: {X_train.memory_usage().sum() / 1e6} Mb")

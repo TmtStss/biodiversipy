@@ -55,50 +55,24 @@ pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
 # ----------------------------------
+#      GCP SETUP
+# ----------------------------------
+# Variables
+GCP_PROJECT_ID=le-wagon-bootcamp-346910
+GCP_BUCKET_NAME= wagon-data-871-biodiversipy
+GCP_REGION=europe-west1
+GCP_BUCKET_FOLDER=data
+LOCAL_DATA_PATH = 'raw_data'
+GCP_BUCKET_FILE_NAME=$(shell basename ${LOCAL_DATA_PATH})
+
+upload_data:
+	@gsutil cp -r ${LOCAL_DATA_PATH} gs://${BUCKET_NAME}/${BUCKET_FOLDER}/${BUCKET_FILE_NAME}
+
+# ----------------------------------
 #      MODEL
 # ----------------------------------
-
 run_locally:
 	@python biodiversipy/main.py
 
 soilgrid_download:
 	@python scripts/soilgrid_download.py
-
-# ----------------------------------
-#      GCP SETUP
-# ----------------------------------
-
-
-## project id - replace with your GCP project id ##
-PROJECT_ID=le-wagon-bootcamp-346910
-
-## bucket name - replace with your GCP bucket name ##
-BUCKET_NAME= wagon-data-871-biodiversipy
-
-## choose your region from https://cloud.google.com/storage/docs/locations#available_locations ##
-REGION=europe-west1
-
-## Set project ###
-
-# set_project:
-# 	@gcloud config set project ${PROJECT_ID}
-
-## Create Bucket ##
-
-
-# create_bucket:
-# 	@gsutil mb -l ${REGION} -p ${PROJECT_ID} gs://${BUCKET_NAME}
-
-# path to the file to upload to GCP (the path to the file should be absolute or should match the directory where the make command is ran)
-# replace with your local path to the `train_1k.csv` and make sure to put the path between quotes
-LOCAL_PATH = 'raw_data'
-
-# bucket directory in which to store the uploaded file (`data` is an arbitrary name that we choose to use)
-BUCKET_FOLDER=data
-
-# name for the uploaded file inside of the bucket (we choose not to rename the file that we upload)
-BUCKET_FILE_NAME=$(shell basename ${LOCAL_PATH})
-
-upload_data:
-# @gsutil cp train_1k.csv gs://wagon-ml-my-bucket-name/data/train_1k.csv
-	@gsutil cp -r ${LOCAL_PATH} gs://${BUCKET_NAME}/${BUCKET_FOLDER}/${BUCKET_FILE_NAME}

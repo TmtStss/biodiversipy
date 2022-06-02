@@ -182,7 +182,7 @@ def clean_occurences(csv, n = 0):
     destination_path = path.join(raw_data_path,'gbif', filename)
     metadata.to_csv(destination_path, index=False)
 
-def append_features(occurences_path, features, from_csv=True):
+def append_features(occurences_path, features_path, from_csv=True):
     '''
     Appends features to a given occurences dataset.
     Occurences can either be a path to a csv-file or a dictionary containing
@@ -190,10 +190,10 @@ def append_features(occurences_path, features, from_csv=True):
     '''
     if from_csv:
         occurences = pd.read_csv(occurences_path)
+        features = pd.read_csv(features_path)
     else:
         occurences = pd.DataFrame(occurences_path)
-
-    features = pd.DataFrame(features)
+        features = pd.DataFrame(features_path)
 
     df = occurences.conditional_join(features,
                                  ('latitude', 'lat_lower', '>='),

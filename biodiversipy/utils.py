@@ -30,19 +30,6 @@ def simple_time_tracker(method):
 
     return timed
 
-def in_germany(coords_germany, lat, lon):
-    """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
-
-    if lat > coords_germany['lat_upper']:
-        return False
-    elif lat < coords_germany['lat_lower']:
-        return False
-    elif lon > coords_germany['lon_upper']:
-        return False
-    elif lon < coords_germany['lon_lower']:
-        return False
-    return True
-
 def tif_to_df(file_path, plot=False, coords=False, column_name='val'):
     '''
     Function for cleaning one of the 19 worldclim datasets.

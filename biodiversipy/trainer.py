@@ -103,6 +103,19 @@ class Trainer(object):
         joblib.dump(self.pipeline, 'model.joblib')
         print(colored("model.joblib saved locally", "green"))
 
+    def get_baseline_model(encoded_y_df):
+        '''
+        Takes a one-hot-encoded y,
+        predicts the probability of each species as a proportion of total species
+        '''
+        new_df = encoded_y_df.copy()
+
+        for column in new_df.columns:
+            new_df[column] = encoded_y_df[column].sum()/encoded_y_df.sum().sum()
+
+        return new_df
+
+
     ### MLFlow methods
     @memoized_property
     def mlflow_client(self):

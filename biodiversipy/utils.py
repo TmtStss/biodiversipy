@@ -206,35 +206,54 @@ def append_features(occurences_path, features_path, from_csv=True):
 
     return df
 
-def encode_taxonKey(dataset):
-    """Takes an occurence DataFrame or csv as input and outputs a DataFrame with the species encoded per unique location"""
-    if isinstance(dataset, pandas.core.frame.DataFrame):
-        data = dataset
+def encode_taxonKey(source_path, from_csv = True, to_csv = True):
+    """Takes an occurence DataFrame or 'occurences_n.csv' as input and outputs the species encoded and the unique location coordinates as DataFrame or csv ('occurences_n_encoded.csv', 'coordinates_n.csv')"""
+
+    if from_csv:
+        coordinates = pd.read_csv(source_path)
     else:
-        data = pd.read_csv(dataset)
+        coordinates = pd.DataFrame(source_path)
 
     # Create a DataFrame with a coordinates column (latitude, longitude)
-    coordinates = data.copy()
     coordinates['coordinates'] = coordinates.apply(lambda row: (row.latitude, row.longitude), axis = 1)
 
     # Convert taxonKey to string for later vectorizing
     coordinates['taxonKey'] = coordinates['taxonKey'].astype('string')
 
     # Group by coordinates and list the taxonKey's
-    grouped = coordinates.groupby(['coordinates'])['taxonKey'].apply(list)
-    grouped = pd.DataFrame(grouped)
+    temp = coordinates.groupby(['coordinates'])['taxonKey'].apply(list)
+    temp = pd.DataFrame(temp)
 
     # Format taxonKey Pandas Series for vectorizing
-    temp = grouped['taxonKey'].map(lambda x: ' '.join(x))
+    temp = temp['taxonKey'].map(lambda x: ' '.join(x))
     temp = temp.to_list()
 
     # Initialize CountVectorizer and apply it to the taxonKey's
     vectorizer = CountVectorizer(tokenizer=lambda txt: txt.split())
     temp = vectorizer.fit_transform(temp)
 
+    # Get feature names out
+    temp = pd.DataFrame(temp.toarray(), columns = vectorizer.get_feature_names_out())
+
     # Merging output of CountVectorizer with latitude and longitude data
     coordinates.reset_index(inplace=True, drop = True)
+    coordinates = coordinates.drop(columns = ['gbifID', 'taxonKey', 'coordinates'])
     merged = coordinates.join(temp)
-    merged = merged.drop(columns = ['gbifID', 'taxonKey', 'coordinates'])
 
-    return merged
+    if to_csv:
+        encoded_path = source_path.replace('.csv', '_encoded.csv')
+        merged.to_csv(encoded_path, index = False)
+        coordinates_path = source_path.replace('occurences', 'coordinates')
+        coordinates.to_csv(coordinates_path, index = False)
+
+    return merged, coordinates
+
+
+import sys
+
+if __name__ == "__main__":
+    _, csv, n = sys.argv
+    clean_occurences(csv, int(n))
+    print('step 1 done')
+    encode_taxonKey(f'../raw_data/gbif/occurences_{n}.csv')
+    print('step 2 done')

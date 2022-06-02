@@ -253,7 +253,7 @@ import sys
 
 if __name__ == "__main__":
     _, csv, n = sys.argv
-    clean_occurences(csv, int(n))
-    print('step 1 done')
-    encode_taxonKey(f'../raw_data/gbif/occurences_{n}.csv')
+    #clean_occurences(csv, int(n))
+    #print('step 1 done')
+    encode_taxonKey(f'raw_data/gbif/occurences_{n}.csv')
     print('step 2 done')

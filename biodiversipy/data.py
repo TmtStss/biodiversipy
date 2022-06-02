@@ -9,6 +9,8 @@ from biodiversipy.params import coords_germany
 
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
 occurrences_file = 'occurences_1k'
+data_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_features.csv')
+
 occurrences_path = path.join(raw_data_path, 'gbif', occurrences_file + '.csv')
 
 features_path = path.join(path.dirname(__file__), 'data', 'coordinates_1k_features.csv')
@@ -61,7 +63,7 @@ def get_complete_occurrences(to_csv=True):
     and different features into one big dataset.
     '''
     for i, key in enumerate(data_sources.keys()):
-        input_path = path.join(raw_data_path, 'output', 'occurrences', f"occurrences_{data_sources[key]['name']}_germany.csv")
+        input_path = path.join(raw_data_path, 'output', 'occurrences', f"{occurrences_file}_{data_sources[key]['name']}_germany.csv")
         if i == 0:
             df = pd.read_csv(input_path)
         else:

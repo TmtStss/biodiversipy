@@ -8,8 +8,9 @@ from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
 
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
-occurrences_path = path.join(raw_data_path, 'gbif', 'occurences_1k.csv')
 data_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_features.csv')
+occurrences_file = 'occurences_1k'
+occurrences_path = path.join(raw_data_path, 'gbif', occurrences_file + '.csv')
 
 def get_tif_data(source, to_csv=True, from_csv=True):
     '''Extract data from tif files'''
@@ -26,23 +27,36 @@ def get_tif_data(source, to_csv=True, from_csv=True):
         file_sort_fn=source['file_sort_fn'],
         column_name_extractor=source['column_name_extractor'])
 
-    full_data = append_features(occurrences_path, data, from_csv)
-
     if (to_csv):
         feature_output_filename = f"{source['id']}_germany.csv"
         feature_output_path = path.join(raw_data_path, 'output', 'features', feature_output_filename)
         data.to_csv(feature_output_path, index=False)
 
-        occurrences_output_filename = f"occurrences_{source['name']}_germany.csv"
-        occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_output_filename)
-        full_data.to_csv(occurrences_output_path, index=False)
+    return data
 
-    return full_data
+def get_features(source, to_csv=True, from_csv=True):
+    '''Append features to occurrences'''
+    print(f"Appending features to occurrences for {source['name']}...")
+    feature_filename = f"{source['id']}_germany.csv"
+    feature_path = path.join(raw_data_path, 'output', 'features', feature_filename)
+
+    if not path.isfile(feature_path):
+        print(f"Could not find feature file named '{feature_path}'. \nExiting")
+        exit(0)
+
+    data = append_features(occurrences_path, feature_path, from_csv)
+
+    if (to_csv):
+        occurrences_output_filename = f"{occurrences_file}_{source['name']}_germany.csv"
+        occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_output_filename)
+        data.to_csv(occurrences_output_path, index=False)
+
+    return data
 
 def get_complete_occurrences(to_csv=True):
     '''
-    Function that merges each of dataset specified in the config.py file
-    containing occurrences and different features into one big dataset.
+    Merge each of dataset specified in the config.py file containing occurrences
+    and different features into one big dataset.
     '''
     for i, key in enumerate(data_sources.keys()):
         input_path = path.join(raw_data_path, 'output', 'occurrences', f"occurrences_{data_sources[key]['name']}_germany.csv")
@@ -50,11 +64,10 @@ def get_complete_occurrences(to_csv=True):
             df = pd.read_csv(input_path)
         else:
             df_tmp = pd.read_csv(input_path)
-            df = df.merge(df_tmp, how='inner', on=['gbifID', 'latitude', 'longitude', 'scientificName'])
+            df = df.merge(df_tmp, how='inner')
 
     if to_csv:
-        output_filename = occurrences_path.split('/')[-1].split('.csv')[0]
-        output_path = path.join(raw_data_path, 'output', 'occurrences', output_filename + '_features.csv')
+        output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_file + '_features.csv')
         df.to_csv(output_path, index=False)
 
     return df
@@ -72,8 +85,11 @@ def get_data():
 if __name__ == '__main__':
 
     if len(argv) == 1:
-        for source in data_sources.values():
+        for key, source in data_sources.items():
             get_tif_data(source)
+            get_features(source)
+
+        get_complete_occurrences(to_csv=True)
 
         exit(0)
 
@@ -84,4 +100,12 @@ if __name__ == '__main__':
         exit(0)
 
     get_tif_data(data_sources[source_name])
-    get_complete_occurrences(to_csv=True)
+    get_features(data_sources[source_name])
+
+    for source in data_sources:
+        feature_filename = f"{occurrences_file}_{data_sources[source]['name']}_germany.csv"
+        feature_path = path.join(raw_data_path, 'output', 'occurrences', feature_filename)
+        if not path.isfile(feature_path):
+            print(f"Could not find feature file named '{feature_path}'. \nExiting")
+            exit(0)
+        get_complete_occurrences(to_csv=True)

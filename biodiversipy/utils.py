@@ -14,10 +14,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 import rioxarray as rxr
 import janitor
 
-def get_error(y_pred, y_true):
-    # TODO something with y_pred and y_true
-    pass
-
 def simple_time_tracker(method):
     '''Time tracking decorator'''
     def timed(*args, **kw):

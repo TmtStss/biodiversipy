@@ -7,7 +7,6 @@ from biodiversipy.trainer import Trainer
 
 default_params = {
     'local': True,
-    'mlflow': True
 }
 
 if __name__ == "__main__":

@@ -66,7 +66,10 @@ LOCAL_DATA_PATH = 'raw_data'
 GCP_BUCKET_FILE_NAME=$(shell basename ${LOCAL_DATA_PATH})
 
 upload_data:
-	@gsutil cp -r ${LOCAL_DATA_PATH} gs://${BUCKET_NAME}/${BUCKET_FOLDER}/${BUCKET_FILE_NAME}
+	@gsutil cp -r ${LOCAL_DATA_PATH} gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME}
+
+download_data:
+	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME} ${LOCAL_DATA_PATH}
 
 # ----------------------------------
 #      MODEL

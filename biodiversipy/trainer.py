@@ -52,11 +52,9 @@ class Trainer(object):
         # log to MLFlow
         self.mlflow_log_metric("train_time", int(time() - tic))
 
-    def evaluate(self):
-        train_error = self.model.evaluate(self.X_train, self.y_train)
-        val_error = self.model.evaluate(self.X_val, self.y_val)
-
-        print(colored(f"train error: {train_error} || val error: {val_error}", "blue"))
+    def evaluate(self, X_test, y_test):
+        self.loss, self.eval_metric = self.model.evaluate(X_test, y_test)
+        print(colored(f"loss: {self.loss} || eval metric: {self.eval_metric}", "blue"))
 
     def save_model(self):
         """Save model to a .joblib file"""

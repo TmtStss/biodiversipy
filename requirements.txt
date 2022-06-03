@@ -49,3 +49,7 @@ pyjanitor==0.23.1
 
 # bot
 python-telegram-bot==20.0a0
+
+# frontend
+streamlit==1.10.0
+icrawler==0.6.6

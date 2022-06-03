@@ -23,7 +23,10 @@ def get_coordinates(location):
     return latitude, longitude
 
 # 1. Get feature data from lat and long
+
+
 # 2. Predict most likely taxonKeys from model
+
 
 
 

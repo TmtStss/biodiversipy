@@ -6,9 +6,9 @@ from memoized_property import memoized_property
 from mlflow.tracking import MlflowClient
 from psutil import virtual_memory
 from termcolor import colored
+from tensorflow.keras.callbacks import EarlyStopping
 from time import time
 
-from sklearn.model_selection import train_test_split
 from biodiversipy.metrics import custom_metric
 from biodiversipy.model import init_model
 from biodiversipy.params import MLFLOW_EXPERIMENT_BASE, MLFLOW_URI
@@ -17,7 +17,7 @@ from biodiversipy.utils import simple_time_tracker
 class Trainer(object):
     VERSION = "0.1"
 
-    def __init__(self, X, y, **kwargs):
+    def __init__(self, X_train, y_train, **kwargs):
         """
             X: ndarray
             y: ndarray
@@ -27,7 +27,7 @@ class Trainer(object):
         self.local = kwargs.get("local", False)  # if True training is done locally
         self.mlflow = kwargs.get("mlflow", False)  # if True log info to mlflow
         self.version = self.kwargs.get("version", self.VERSION)
-        self.X_train, self.X_val, self.y_train, self.y_val = train_test_split(X, y, test_size=0.3)
+        self.X_train, self.y_train = X_train, y_train
 
         # MLFlow
         self.mf_experiment_name = f"{MLFLOW_EXPERIMENT_BASE} v{self.version}"
@@ -37,8 +37,17 @@ class Trainer(object):
     @simple_time_tracker
     def train(self):
         tic = time()
+        es = EarlyStopping(patience=4)
+
         model = init_model(self.X_train, self.y_train, metrics=[custom_metric])
-        self.history = model.fit(self.X_train, self.y_train, epochs=1000, batch_size=16, verbose=0)
+        self.history = model.fit(
+            self.X_train,
+            self.y_train,
+            epochs=1000,
+            batch_size=16,
+            callbacks=[es],
+            validation_split=0.3,
+            verbose=0)
 
         # log to MLFlow
         self.mlflow_log_metric("train_time", int(time() - tic))

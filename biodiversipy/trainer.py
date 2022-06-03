@@ -112,6 +112,20 @@ class Trainer(object):
             new_df[column] = encoded_y_df[column].sum()/encoded_y_df.sum().sum()
         return new_df
 
+    def compute_k(y_only_relevant_columns):
+        '''
+        only include columns with animal species, no lang/lat etc. Perhaps use:
+        y[y.columns[2:-1]]
+        '''
+        return y_only_relevant_columns.sum(axis=1).mean().round().astype(int)
+
+    def get_K_most_probable(y_pred_proba, k):
+
+        only_highest = y_pred_proba.stack().groupby(level=0).nlargest(k).unstack().reset_index(level=1, drop=True).reindex(columns=y_pred_proba.columns)
+        fillna_highest =  only_highest.fillna(0)
+
+        return fillna_highest.astype(bool).astype(int)
+
 
     ### MLFlow methods
     @memoized_property

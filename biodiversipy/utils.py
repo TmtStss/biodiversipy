@@ -262,20 +262,3 @@ if __name__ == "__main__":
     print('step 1 done')
     encode_taxonKey(f'../raw_data/gbif/occurences_{n}.csv')
     print('step 2 done')
-
-
-# Returns species name from a taxonKey and metadata dataframe
-def species_name_from_taxonKey(taxonKey, metadata_df):
-
-    pdseries = metadata_df.loc[metadata_df['taxonKey'] == taxonKey]['scientificName']
-
-    return pdseries.iloc[0]
-
-# Returns image of species from a taxonKey and metadata dataframe
-def image_from_taxonKey(taxonKey, metadata_df):
-
-    species_name = species_name_from_taxonKey(taxonKey, metadata_df)
-
-    google_Crawler = GoogleImageCrawler(storage = {'root_dir': r'output_image'})
-
-    google_Crawler.crawl(keyword = species_name, max_num = 1)

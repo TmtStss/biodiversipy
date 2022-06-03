@@ -294,5 +294,9 @@ OWSLib==0.25.0
 pyjanitor==0.23.1
 
 # bot
+<<<<<<< HEAD
+=======
+python-telegram-bot==20.0a0
+>>>>>>> 7a038998a66f9e9df146cab4ccaf4240122cd7fd
 
 icrawler

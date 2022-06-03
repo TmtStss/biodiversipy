@@ -20,6 +20,7 @@ yapf==0.32.0
 gcsfs==2022.5.0
 google-cloud-storage==2.3.0
 mlflow==1.22.0
+icrawler
 
 # utilities
 six>=1.14

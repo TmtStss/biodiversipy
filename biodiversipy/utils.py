@@ -9,6 +9,7 @@ from os import path
 from time import time
 from biodiversipy.params import coords_germany
 from sklearn.feature_extraction.text import CountVectorizer
+from biodiversipy.config import data_sources
 
 #RXR
 
@@ -266,31 +267,27 @@ def encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True):
 
     return merged, coordinates
 
-def get_features_for_coordinates(latitude, longitude, features_path, from_csv= True):
-    if from_csv:
-        features = pd.read_csv(features_path)
-    else:
-        features = pd.DataFrame(features_path)
+def get_features_for_coordinates(latitude, longitude):
+    raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
+    occurrences = pd.DataFrame({"latitude": [latitude], "longitude": [longitude]})
+    for collection in data_sources:
+        print(collection)
+        source_path = path.join(raw_data_path, 'output', 'features', data_sources[collection]["id"] + '_germany.csv')
 
-    occurrences = pd.DataFrame({"latitude": latitude,
-                                "longitude": longitude})
+        features = pd.read_csv(source_path)
+        print("waiting for it")
+        occurrences = occurrences.conditional_join(features,
+                                    ('latitude', 'lat_lower', '>='),
+                                    ('latitude', 'lat_upper', '<'),
+                                    ('longitude', 'lon_lower', '>='),
+                                    ('longitude', 'lon_upper', '<'),
+                                    how='inner')
 
-    df = occurrences.conditional_join(features,
-                                 ('latitude', 'lat_lower', '>='),
-                                 ('latitude', 'lat_upper', '<'),
-                                 ('longitude', 'lon_lower', '>='),
-                                 ('longitude', 'lon_upper', '<'),
-                                 how='inner')
+        occurrences = occurrences.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
 
-    df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+    return occurrences
 
-    return df
+def in_germany(coords_germany, lat, lon):
+    """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
 
-import sys
-
-if __name__ == "__main__":
-    _, csv, n = sys.argv
-    clean_occurrences('biodiversipy/../raw_data/', csv, int(n))
-    print('step 1 done')
-    encode_taxonKey('biodiversipy/../raw_data', int(n))
-    print('step 2 done')
+    return lat <= coords_germany['lat_upper'] and lat >= coords_germany['lat_lower'] and lon <= coords_germany['lon_upper'] and lon >= coords_germany['lon_lower']

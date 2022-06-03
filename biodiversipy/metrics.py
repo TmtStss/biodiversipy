@@ -11,7 +11,11 @@ def compute_average(y_true, y_pred, t):
     return average
 
 def find_t_min(y_true, y_pred, K, rate, t):
-    """Returns the minimum threshold t and corresponding average satisfying the condition average <= K. The minimum t is found iteratively, with tuning parameter rate [0-1]"""
+    """
+    Returns the minimum threshold t and corresponding average satisfying the
+    condition average <= K.
+    The minimum t is found iteratively, with tuning parameter rate [0-1]
+    """
     assert rate <= 1
     assert rate >= 0
     assert K > 0

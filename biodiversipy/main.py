@@ -31,7 +31,7 @@ if __name__ == "__main__":
     t.train()
 
     print(colored("## Evaluating model ##", "blue"))
-    t.evaluate()
+    t.evaluate(X_test, y_test)
 
     print(colored("## Saving model ##", "blue"))
     t.save_model()

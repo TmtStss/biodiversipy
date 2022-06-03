@@ -84,3 +84,24 @@ run_locally:
 
 soilgrid_download:
 	@python scripts/soilgrid_download.py
+
+# ----------------------------------
+#      STREAMLIT
+# ----------------------------------
+
+streamlit:
+	-@streamlit run website/app.py
+
+# ----------------------------------
+#         HEROKU COMMANDS
+# ----------------------------------
+
+# heroku_login:
+# 	-@heroku login
+
+# heroku_create_app:
+# 	-@heroku create ${APP_NAME}
+
+# deploy_heroku:
+# 	-@git push heroku master
+# 	-@heroku ps:scale web=1

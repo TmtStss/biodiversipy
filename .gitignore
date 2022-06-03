@@ -4,6 +4,7 @@
 .DS_Store
 raw_data/
 *.csv
+!biodiversipy/data/*.csv
 **/__pycache__/
 .env
 *.log

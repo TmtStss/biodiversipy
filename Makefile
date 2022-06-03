@@ -55,9 +55,25 @@ pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
 # ----------------------------------
+#      GCP SETUP
+# ----------------------------------
+# Variables
+GCP_PROJECT_ID=le-wagon-bootcamp-346910
+GCP_BUCKET_NAME= wagon-data-871-biodiversipy
+GCP_REGION=europe-west1
+GCP_BUCKET_FOLDER=data
+LOCAL_DATA_PATH = 'raw_data'
+GCP_BUCKET_FILE_NAME=$(shell basename ${LOCAL_DATA_PATH})
+
+upload_data:
+	@gsutil cp -r ${LOCAL_DATA_PATH} gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME}
+
+download_data:
+	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME} ${LOCAL_DATA_PATH}
+
+# ----------------------------------
 #      MODEL
 # ----------------------------------
-
 run_locally:
 	@python biodiversipy/main.py
 

@@ -15,11 +15,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from biodiversipy.encoders import SomeTransformer
+from biodiversipy.metrics import custom_metric
 from biodiversipy.params import MLFLOW_EXPERIMENT_BASE, MLFLOW_URI, ESTIMATORS
-from biodiversipy.utils import get_error, simple_time_tracker
+from biodiversipy.utils import simple_time_tracker
 
 class Trainer(object):
-    ESTIMATOR = "SVC" # TODO set correct default
+    ESTIMATOR = "svc" # TODO set correct default
     VERSION = "0.1"
 
     def __init__(self, X, y, **kwargs):
@@ -38,19 +39,19 @@ class Trainer(object):
 
         # MLFlow
         self.mf_experiment_name = f"{MLFLOW_EXPERIMENT_BASE} {self.estimator} v{self.version}"
-        self.log_estimator_params()
+        #self.log_estimator_params()
         self.log_kwargs_params()
         self.log_machine_specs()
 
     def set_pipeline(self):
         """defines the pipeline as a class attribute"""
         some_pipe = Pipeline([
-            ('some_transformer', SomeTransformer()),
+            ('some_transformer', SomeTransformer('some_param')),
             ('stdscaler', StandardScaler())
         ])
 
         some_other_pipe = Pipeline([
-            ('some_other_transformer', SomeTransformer()),
+            ('some_other_transformer', SomeTransformer('some_param')),
             ('ohe', OneHotEncoder(handle_unknown='ignore'))
         ])
 
@@ -83,8 +84,6 @@ class Trainer(object):
         print(colored(f"train error: {train_error} || val error: {val_error}", "blue"))
 
     def compute_error(self, X_test, y_test, show=False):
-        # TODO define custom metric
-
         if self.pipeline is None:
             raise ("Cannot evaluate an empty pipeline")
 
@@ -95,7 +94,7 @@ class Trainer(object):
             res["pred"] = y_pred
             print(colored(res.sample(5), "blue"))
 
-        err = get_error(y_pred, y_test)
+        err = custom_metric(y_test, y_pred)
         return round(err, 3)
 
     def save_model(self):
@@ -140,7 +139,7 @@ class Trainer(object):
             self.mlflow_client.log_metric(self.mlflow_run.info.run_id, key, value)
 
     def log_estimator_params(self):
-        reg = self.get_estimator()
+        reg = self.Estimator
         self.mlflow_log_param('estimator_name', reg.__class__.__name__)
         params = reg.get_params()
         for k, v in params.items():

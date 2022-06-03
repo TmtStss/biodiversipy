@@ -277,7 +277,20 @@ widgetsnbextension==3.5.2
 wrapt==1.12.1
 wsproto==1.0.0
 xgboost==1.5.1
+
 XlsxWriter==3.0.2
 yapf==0.32.0
 yarl==1.7.2
 zipp==3.7.0
+
+
+# geospatial
+rasterio==1.2.10
+rioxarray==0.11.1
+OWSLib==0.25.0
+
+# data manipulation
+pyjanitor==0.23.1
+
+# bot
+python-telegram-bot==20.0a0

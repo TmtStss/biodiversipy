@@ -72,7 +72,7 @@ def image_from_taxonKey(taxonKey, metadata_df):
 
     species_name = species_name_from_taxonKey(taxonKey, metadata_df)
 
-    google_Crawler = GoogleImageCrawler(storage = {'root_dir': r'output_image'})
+    google_Crawler = GoogleImageCrawler(storage = {'root_dir': f'raw_data/output/images'})
 
     google_Crawler.crawl(keyword = species_name, max_num = 1)
 

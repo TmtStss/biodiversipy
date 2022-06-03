@@ -90,7 +90,7 @@ soilgrid_download:
 # ----------------------------------
 
 streamlit:
-	@streamlit run website/app.py
+	-@streamlit run website/app.py
 
 # ----------------------------------
 #         HEROKU COMMANDS

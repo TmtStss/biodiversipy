@@ -12,7 +12,10 @@ location = st.text_input("Enter location")
 
 ## Get coordinates for input address ##
 
+# location = "Rue du Culot 2 1341 ottignies"
+
 latitude, longitude = get_coordinates(location)
+st.write(latitude, longitude)
 
 ## Get features for corresponding coordinates
 

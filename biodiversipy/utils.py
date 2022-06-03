@@ -266,6 +266,26 @@ def encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True):
 
     return merged, coordinates
 
+def get_features_for_coordinates(latitude, longitude, features_path, from_csv= True):
+    if from_csv:
+        features = pd.read_csv(features_path)
+    else:
+        features = pd.DataFrame(features_path)
+
+    occurrences = pd.DataFrame({"latitude": latitude,
+                                "longitude": longitude})
+
+    df = occurrences.conditional_join(features,
+                                 ('latitude', 'lat_lower', '>='),
+                                 ('latitude', 'lat_upper', '<'),
+                                 ('longitude', 'lon_lower', '>='),
+                                 ('longitude', 'lon_upper', '<'),
+                                 how='inner')
+
+    df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+    return df
+
 import sys
 
 if __name__ == "__main__":

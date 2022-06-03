@@ -14,11 +14,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 import rioxarray as rxr
 import janitor
 
-#API
-
-from icrawler.builtin import GoogleImageCrawler
-import requests
-
 def simple_time_tracker(method):
     '''Time tracking decorator'''
     def timed(*args, **kw):

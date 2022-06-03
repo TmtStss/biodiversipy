@@ -294,3 +294,5 @@ pyjanitor==0.23.1
 
 # bot
 python-telegram-bot==20.0a0
+
+icrawler

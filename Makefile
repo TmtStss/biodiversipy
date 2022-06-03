@@ -65,11 +65,16 @@ GCP_BUCKET_FOLDER=data
 LOCAL_DATA_PATH = 'raw_data'
 GCP_BUCKET_FILE_NAME=$(shell basename ${LOCAL_DATA_PATH})
 
-upload_data:
+upload_all_data:
 	@gsutil cp -r ${LOCAL_DATA_PATH} gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME}
 
+upload_data:
+	@test $(path)
+	@gsutil cp -r $(path) gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path)
+
 download_data:
-	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/${GCP_BUCKET_FILE_NAME} ${LOCAL_DATA_PATH}
+	@test $(path)
+	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path) biodiversipy/$(path)
 
 # ----------------------------------
 #      MODEL

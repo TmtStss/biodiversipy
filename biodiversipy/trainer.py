@@ -108,10 +108,8 @@ class Trainer(object):
         predicts the probability of each species as a proportion of total species
         '''
         new_df = encoded_y_df.copy()
-
         for column in new_df.columns:
             new_df[column] = encoded_y_df[column].sum()/encoded_y_df.sum().sum()
-
         return new_df
 
 

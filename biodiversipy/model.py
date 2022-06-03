@@ -1,6 +1,11 @@
+import joblib
+from os import path
+
 from tensorflow.keras.layers.experimental.preprocessing import Normalization
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+
+LOCAL_MODEL_PATH = path.join(path.dirname(__file__), '..', 'model.joblib')
 
 def init_model(X, y, metrics):
     normalization_layer = Normalization()
@@ -20,3 +25,7 @@ def init_model(X, y, metrics):
         metrics=[metrics])
 
     return model
+
+def load_model():
+    pipeline = joblib.load(LOCAL_MODEL_PATH)
+    return pipeline

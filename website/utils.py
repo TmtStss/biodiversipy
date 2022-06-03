@@ -12,6 +12,7 @@ import requests
 
 
 # Gets coordinates from an input location
+
 def get_coordinates(location):
     url = "https://nominatim.openstreetmap.org/search?"
     params = {"q": location, "format": "json"}

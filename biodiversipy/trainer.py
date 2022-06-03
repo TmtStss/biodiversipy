@@ -43,7 +43,7 @@ class Trainer(object):
             self.X_train,
             self.y_train,
             epochs=1000,
-            batch_size=64,
+            batch_size=16,
             callbacks=[es],
             validation_split=0.3,
             verbose=1)

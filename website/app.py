@@ -20,6 +20,7 @@ latitude, longitude = get_coordinates(location)
 if in_berlin(coords_berlin, latitude, longitude):
     st.write(f"({latitude}, {longitude}) inside of Berlin")
     df = get_features_for_coordinates(latitude, longitude)
+    st.write(df)
 
 else:
     #st.write(f"({latitude}, {longitude}) outside of Germany")

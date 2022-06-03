@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 from os import path
 from time import time
-from biodiversipy.params import coords_germany
+from biodiversipy.params import coords_germany, coords_berlin
 from sklearn.feature_extraction.text import CountVectorizer
 from biodiversipy.config import data_sources
 
@@ -291,3 +291,8 @@ def in_germany(coords_germany, lat, lon):
     """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
 
     return lat <= coords_germany['lat_upper'] and lat >= coords_germany['lat_lower'] and lon <= coords_germany['lon_upper'] and lon >= coords_germany['lon_lower']
+
+def in_berlin(coords_berlin, lat, lon):
+    """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
+
+    return lat <= coords_berlin['lat_upper'] and lat >= coords_berlin['lat_lower'] and lon <= coords_berlin['lon_upper'] and lon >= coords_berlin['lon_lower']

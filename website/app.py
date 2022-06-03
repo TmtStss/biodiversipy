@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-from biodiversipy.params import coords_germany
-from biodiversipy.utils import get_features_for_coordinates, in_germany
+from biodiversipy.params import coords_germany, coords_berlin
+from biodiversipy.utils import get_features_for_coordinates, in_germany, in_berlin
 from utils import get_coordinates
 
 st.markdown("# Plant Species Near Me")
@@ -15,13 +15,15 @@ location = st.text_input("Enter location")
 
 latitude, longitude = get_coordinates(location)
 
-if in_germany(coords_germany, latitude, longitude):
-    st.write(f"({latitude}, {longitude}) inside of Germany")
-
-    # df = get_features_for_coordinates(latitude, longitude)
+#if in_germany(coords_germany, latitude, longitude):
+#    st.write(f"({latitude}, {longitude}) inside of Germany")
+if in_berlin(coords_berlin, latitude, longitude):
+    st.write(f"({latitude}, {longitude}) inside of Berlin")
+    df = get_features_for_coordinates(latitude, longitude)
 
 else:
-    st.write(f"({latitude}, {longitude}) outside of Germany")
+    #st.write(f"({latitude}, {longitude}) outside of Germany")
+    st.write(f"({latitude}, {longitude}) outside of Berlin")
 
 ## Get features for corresponding coordinates
 

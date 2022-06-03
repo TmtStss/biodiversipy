@@ -1,5 +1,15 @@
 import requests
 
+# Our stuff
+
+from biodiversipy.config import data_sources
+
+# Path
+
+from os import path
+import janitor
+
+
 #Standard
 
 import numpy as np
@@ -21,10 +31,29 @@ def get_coordinates(location):
     longitude = response["lon"]
 
     return float(latitude), float(longitude)
-    return latitude, longitude
 
 # 1. Get feature data from lat and long
 
+def get_features_for_coordinates(latitude, longitude):
+    raw_data_path = path.join(path.dirname('notebooks'), '..', 'raw_data')
+    occurrences = pd.DataFrame({"latitude": [latitude], "longitude": [longitude]})
+    for collection in data_sources:
+        print(collection)
+        source_path = path.join(raw_data_path, 'output', 'features', 'dummies', data_sources[collection]["id"] + '_germany.csv')
+
+        features = pd.read_csv(source_path)
+        print("waiting for it")
+        occurrences = occurrences.conditional_join(features,
+                                    ('latitude', 'lat_lower', '>='),
+                                    ('latitude', 'lat_upper', '<'),
+                                    ('longitude', 'lon_lower', '>='),
+                                    ('longitude', 'lon_upper', '<'),
+                                    how='inner')
+
+        occurrences = occurrences.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+
+    return occurrences
 
 # 2. Predict most likely taxonKeys from model
 

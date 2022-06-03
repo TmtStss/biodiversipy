@@ -14,20 +14,24 @@ default_params = {
 if __name__ == "__main__":
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
-    print("############   Loading Data   ############")
-    X, y = get_data()
+    print(colored("## Loading data ##", "blue"))
+    _, (X, y) = get_data()
+    # TODO delete 2 lines below
+    X = X[:10]
+    y = y[:10]
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    print(f"shape: {X_train.shape}")
-    print(f"size: {X_train.memory_usage().sum() / 1e6} Mb")
+    print(f"X shape: {X_train.shape}")
+    print(f"y shape: {y_train.shape}")
 
     t = Trainer(X_train, y_train, **default_params)
 
-    print(colored("############  Training model   ############", "red"))
+    print(colored("## Training model ##", "blue"))
     t.train()
 
-    print(colored("############  Evaluating model ############", "blue"))
+    print(colored("## Evaluating model ##", "blue"))
     t.evaluate()
 
-    print(colored("############   Saving model    ############", "green"))
+    print(colored("## Saving model ##", "blue"))
     t.save_model()

@@ -2,7 +2,7 @@ import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler
 
-TELEGRAM_BOT_TOKEN = "5456013033:AAGgT8tllsN06qBAvwzB03dbrEVmopNn5vc"
+TELEGRAM_BOT_TOKEN = "TODO"
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

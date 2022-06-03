@@ -76,9 +76,9 @@ def get_complete_occurrences(to_csv=True):
 
 def get_data():
     X = pd.read_csv(features_path)
-    y = pd.read_csv(target_path)
+    y = pd.read_csv(target_path).drop(columns=['longitude', 'latitude'])
 
-    return X, y
+    return (X, y), (X.to_numpy(), y.to_numpy())
 
 if __name__ == '__main__':
 

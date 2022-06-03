@@ -10,3 +10,4 @@ raw_data/
 *.log
 !occurences_*.csv
 model.joblib
+.vscode

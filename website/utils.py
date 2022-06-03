@@ -35,7 +35,7 @@ def get_coordinates(location):
 # 1. Get feature data from lat and long
 
 def get_features_for_coordinates(latitude, longitude):
-    raw_data_path = path.join(path.dirname('notebooks'), '..', 'raw_data')
+    raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
     occurrences = pd.DataFrame({"latitude": [latitude], "longitude": [longitude]})
     for collection in data_sources:
         print(collection)
@@ -72,7 +72,7 @@ def image_from_taxonKey(taxonKey, metadata_df):
 
     species_name = species_name_from_taxonKey(taxonKey, metadata_df)
 
-    google_Crawler = GoogleImageCrawler(storage = {'root_dir': r'output_image'})
+    google_Crawler = GoogleImageCrawler(storage = {'root_dir': f'raw_data/output/images'})
 
     google_Crawler.crawl(keyword = species_name, max_num = 1)
 

@@ -13,6 +13,12 @@ N = 100_000
 # File paths
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
 data_path = path.join(path.dirname(__file__), 'data', 'occurrences_1k_features.csv')
+features_path = path.join(
+    raw_data_path,
+    'output/occurrences/coordinates_100k/coordinates_100k_features.csv')
+target_path = path.join(
+    raw_data_path,
+    'gbif/occurrences_100k/occurrences_100k_encoded.csv')
 
 occurrences_file = 'coordinates' + get_suffix(N)
 occurrences_path = path.join(raw_data_path, 'gbif', \
@@ -30,9 +36,6 @@ def get_gbif_data(csv_file='germany.csv', n=N):
     assert len(coordinates) <= N
 
     return merged, coordinates
-
-features_path = path.join(path.dirname(__file__), 'data', 'coordinates_1k_features.csv')
-target_path = path.join(path.dirname(__file__), 'data', 'occurences_1k_encoded.csv')
 
 def get_tif_data(source, to_csv=True, from_csv=True):
     '''Extract data from tif files'''

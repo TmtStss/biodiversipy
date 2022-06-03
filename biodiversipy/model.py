@@ -16,13 +16,13 @@ def init_model(X, y, metrics):
         Dense(10, input_dim=X.shape[1], activation='relu'),
         Dense(10, activation='relu'),
         Dense(10, activation='relu'),
-        Dense(y.shape[1], activation='softmax'),
+        Dense(y.shape[1], activation='sigmoid'),
     ])
 
     model.compile(
         loss='categorical_crossentropy',
         optimizer='adam',
-        metrics=[metrics])
+        metrics=['accuracy'])
 
     return model
 

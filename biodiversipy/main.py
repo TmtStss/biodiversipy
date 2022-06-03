@@ -16,10 +16,6 @@ if __name__ == "__main__":
 
     print(colored("## Loading data ##", "blue"))
     _, (X, y) = get_data()
-    # TODO delete 2 lines below
-    X = X[:10]
-    y = y[:10]
-
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
     print(f"X shape: {X_train.shape}")

@@ -22,7 +22,6 @@ class Trainer(object):
             X: ndarray
             y: ndarray
         """
-        self.pipeline = None
         self.kwargs = kwargs
         self.local = kwargs.get("local", False)  # if True training is done locally
         self.mlflow = kwargs.get("mlflow", False)  # if True log info to mlflow
@@ -39,15 +38,15 @@ class Trainer(object):
         tic = time()
         es = EarlyStopping(patience=4)
 
-        model = init_model(self.X_train, self.y_train, metrics=[custom_metric])
-        self.history = model.fit(
+        self.model = init_model(self.X_train, self.y_train, metrics=[custom_metric])
+        self.history = self.model.fit(
             self.X_train,
             self.y_train,
             epochs=1000,
-            batch_size=16,
+            batch_size=64,
             callbacks=[es],
             validation_split=0.3,
-            verbose=0)
+            verbose=1)
 
         # log to MLFlow
         self.mlflow_log_metric("train_time", int(time() - tic))
@@ -58,7 +57,7 @@ class Trainer(object):
 
     def save_model(self):
         """Save model to a .joblib file"""
-        joblib.dump(self.pipeline, 'model.joblib')
+        joblib.dump(self.model, 'model.joblib')
         print(colored("model.joblib saved locally", "green"))
 
     def get_baseline_model(encoded_y_df):

@@ -74,7 +74,7 @@ upload_data:
 
 download_data:
 	@test $(path)
-	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path) biodiversipy/$(path)
+	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path) $(path)
 
 # ----------------------------------
 #      MODEL

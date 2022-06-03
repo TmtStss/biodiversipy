@@ -1,6 +1,6 @@
 import pandas as pd
 
-from os import path
+from os import path, mkdir
 from sys import argv, exit
 
 from biodiversipy.utils import merge_dfs, append_features, clean_occurrences, encode_taxonKey, get_suffix
@@ -8,7 +8,7 @@ from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
 
 # Number of samples
-N = 1000
+N = 100_000
 
 # File paths
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
@@ -70,7 +70,12 @@ def get_features(source, to_csv=True, from_csv=True):
 
     if (to_csv):
         occurrences_output_filename = f"{occurrences_file}_{source['name']}_germany.csv"
-        occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_output_filename)
+        occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', \
+            occurrences_file, occurrences_output_filename)
+
+        if not path.isdir(occurrences_output_path):
+            mkdir(occurrences_output_path)
+
         data.to_csv(occurrences_output_path, index=False)
 
     return data
@@ -82,7 +87,8 @@ def get_complete_occurrences(to_csv=True):
     '''
     print("Merging features")
     for i, key in enumerate(data_sources.keys()):
-        input_path = path.join(raw_data_path, 'output', 'occurrences', f"{occurrences_file}_{data_sources[key]['name']}_germany.csv")
+        input_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_file, \
+            f"{occurrences_file}_{data_sources[key]['name']}_germany.csv")
         if i == 0:
             df = pd.read_csv(input_path)
         else:
@@ -90,7 +96,12 @@ def get_complete_occurrences(to_csv=True):
             df = df.merge(df_tmp, how='inner')
 
     if to_csv:
-        output_path = path.join(raw_data_path, 'output', 'occurrences', occurrences_file + '_features.csv')
+        output_path = path.join(raw_data_path, 'output', 'occurrences', \
+            occurrences_file, occurrences_file + '_features.csv')
+
+        if not path.isdir(output_path):
+            mkdir(output_path)
+
         df.to_csv(output_path, index=False)
 
     return df

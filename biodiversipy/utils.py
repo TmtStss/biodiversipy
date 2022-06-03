@@ -122,6 +122,7 @@ def merge_dfs(source_path, coords=False, file_sort_fn=None, column_name_extracto
     return df
 
 def get_suffix(n):
+    suffix = ''
     if n < 1_000:
         suffix = '_' + str(n)
     elif (n >= 1_000) and (n < 1_000_000):

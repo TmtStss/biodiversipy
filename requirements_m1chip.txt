@@ -294,5 +294,6 @@ OWSLib==0.25.0
 pyjanitor==0.23.1
 
 # bot
+python-telegram-bot==20.0a0
 
 icrawler

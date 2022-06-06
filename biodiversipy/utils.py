@@ -132,7 +132,7 @@ def get_suffix(n):
         suffix = '_' + str(n // 1_000_000) + 'm'
     return suffix
 
-def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, coords=False):
+def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, num_species = 0, coords=False):
     """Cleans a csv as downloaded from GBIF. Samples n rows. Outputs 2 csv files (occurrences and metadata)."""
     source_path = path.join(raw_data_path, 'gbif', csv)
 
@@ -161,11 +161,21 @@ def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, coords=False):
 
         data = data[mask]
 
+    # Filter for a given number of most abundant species
+    if num_species:
+        topKeys = data.groupby(['taxonKey']).count()[['gbifID']].rename(columns = {'gbifID': 'num_obs'}).reset_index().sort_values(by ='num_obs', ascending = False)
+        topKeys = topKeys['taxonKey'].head(num_species)
+        data = pd.merge(data, topKeys, on = 'taxonKey', how = 'inner')
+
     # Sample n rows
     suffix = ''
+    if num_species:
+        suffix = suffix + f'_top{num_species}'
+
     if n:
         data = data.sample(n, random_state=1)
         suffix = get_suffix(n)
+
 
     # Splitting occurrences data and metadata
     gbifID = ['gbifID']

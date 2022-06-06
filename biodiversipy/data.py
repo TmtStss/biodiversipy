@@ -9,6 +9,7 @@ from biodiversipy.params import coords_germany
 
 # Number of samples
 N = 100_000
+num_species = 100
 
 # File paths
 raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')
@@ -20,18 +21,18 @@ target_path = path.join(
     raw_data_path,
     'gbif/occurrences_100k/occurrences_100k_encoded.csv')
 
-occurrences_file = 'coordinates' + get_suffix(N)
+occurrences_file = 'coordinates' + get_suffix(N, num_species)
 occurrences_path = path.join(raw_data_path, 'gbif', \
     occurrences_file.replace('coordinates', 'occurrences'), occurrences_file + '.csv')
 
 
-def get_gbif_data(csv_file='germany.csv', n=N):
+def get_gbif_data(csv_file='germany.csv', n=N, num_species = num_species):
     '''Clean and encode raw gbif data'''
     print(f"Cleaning occurrences data...")
-    clean_occurrences(raw_data_path, csv_file, n, coords_germany)
+    clean_occurrences(raw_data_path, csv_file, n, num_species, coords_germany)
 
     print(f"Encoding taxonKey...")
-    merged, coordinates = encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True)
+    merged, coordinates = encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True)
 
     assert len(coordinates) <= N
 
@@ -74,12 +75,12 @@ def get_features(source, to_csv=True, from_csv=True):
     if (to_csv):
         occurrences_output_filename = f"{occurrences_file}_{source['name']}_germany.csv"
         occurrences_output_path = path.join(raw_data_path, 'output', 'occurrences', \
-            occurrences_file, occurrences_output_filename)
+            occurrences_file)
 
         if not path.isdir(occurrences_output_path):
             mkdir(occurrences_output_path)
 
-        data.to_csv(occurrences_output_path, index=False)
+        data.to_csv(path.join(occurrences_output_path, occurrences_output_filename), index=False)
 
     return data
 
@@ -116,7 +117,7 @@ def get_data():
     return (X, y), (X.to_numpy(), y.to_numpy())
 
 if __name__ == '__main__':
-    get_gbif_data(csv_file='germany.csv', n=N)
+    # get_gbif_data(csv_file='germany.csv', n=N, num_species=num_species)
 
     if len(argv) == 1:
         for key, source in data_sources.items():

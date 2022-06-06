@@ -122,7 +122,7 @@ def merge_dfs(source_path, coords=False, file_sort_fn=None, column_name_extracto
 
     return df
 
-def get_suffix(n):
+def get_suffix(n, num_species = 0):
     suffix = ''
     if n < 1_000:
         suffix = '_' + str(n)
@@ -130,9 +130,11 @@ def get_suffix(n):
         suffix = '_' + str(n // 1_000) + 'k'
     else:
         suffix = '_' + str(n // 1_000_000) + 'm'
+    if num_species:
+        suffix = suffix + f'_top{num_species}'
     return suffix
 
-def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, coords=False):
+def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, num_species = 0, coords=False):
     """Cleans a csv as downloaded from GBIF. Samples n rows. Outputs 2 csv files (occurrences and metadata)."""
     source_path = path.join(raw_data_path, 'gbif', csv)
 
@@ -161,11 +163,17 @@ def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, coords=False):
 
         data = data[mask]
 
+    # Filter for a given number of most abundant species
+    if num_species:
+        topKeys = data.groupby(['taxonKey']).count()[['gbifID']].rename(columns = {'gbifID': 'num_obs'}).reset_index().sort_values(by ='num_obs', ascending = False)
+        topKeys = topKeys['taxonKey'].head(num_species)
+        data = pd.merge(data, topKeys, on = 'taxonKey', how = 'inner')
+
     # Sample n rows
     suffix = ''
-    if n:
+    if n or num_species:
         data = data.sample(n, random_state=1)
-        suffix = get_suffix(n)
+        suffix = get_suffix(n, num_species)
 
     # Splitting occurrences data and metadata
     gbifID = ['gbifID']
@@ -216,14 +224,14 @@ def append_features(occurrences_path, features_path, from_csv=True):
 
     return df
 
-def encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True):
+def encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True):
     """
     Takes an occurence DataFrame or 'occurrences_n.csv' as input and outputs
     the species encoded and the unique location coordinates as DataFrame or
     csv ('occurrences_n_encoded.csv', 'coordinates_n.csv')
     """
-    filename = 'occurrences' + get_suffix(n) + '.csv'
-    source_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n), filename)
+    filename = 'occurrences' + get_suffix(n, num_species) + '.csv'
+    source_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n, num_species), filename)
 
     if from_csv:
         coordinates = pd.read_csv(source_path)
@@ -262,7 +270,7 @@ def encode_taxonKey(raw_data_path, n, from_csv = True, to_csv = True):
         merged.to_csv(encoded_path, index = False)
 
         coordinates_filename = filename.replace('occurrences', 'coordinates')
-        coordinates_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n), coordinates_filename)
+        coordinates_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n, num_species), coordinates_filename)
         coordinates.to_csv(coordinates_path, index = False)
 
     return merged, coordinates

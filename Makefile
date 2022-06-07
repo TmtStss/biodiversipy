@@ -57,9 +57,11 @@ pypi:
 # ----------------------------------
 #      GCP SETUP
 # ----------------------------------
-# Variables
+
+### Variables
 GCP_PROJECT_ID=le-wagon-bootcamp-346910
 GCP_BUCKET_NAME= wagon-data-871-biodiversipy
+GCP_BUCKET_TRAINING_FOLDER = 'trainings'
 GCP_REGION=europe-west1
 GCP_BUCKET_FOLDER=data
 LOCAL_DATA_PATH = 'raw_data'
@@ -75,6 +77,37 @@ upload_data:
 download_data:
 	@test $(path)
 	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path) $(path)
+
+### GCP AI Platform - - - - - - - - - - - - - - - - - - - -
+
+##### Machine configuration - - - - - - - - - - - - - - - -
+
+REGION=europe-west1
+
+PYTHON_VERSION=3.8
+FRAMEWORK=TensorFlow
+RUNTIME_VERSION=2.7
+
+##### Package params  - - - - - - - - - - - - - - - - - - -
+
+PACKAGE_NAME=biodiversipy
+FILENAME=trainer
+
+##### Job - - - - - - - - - - - - - - - - - - - - - - - - -
+
+JOB_NAME=complex_taxi_fare_training_pipeline_$(shell date +'%Y%m%d_%H%M%S')
+
+gcp_submit_training:
+	gcloud ai-platform jobs submit training ${JOB_NAME} \
+		--job-dir gs://${BUCKET_NAME}/${BUCKET_TRAINING_FOLDER} \
+		--package-path ${PACKAGE_NAME} \
+		--module-name ${PACKAGE_NAME}.${FILENAME} \
+		--python-version=${PYTHON_VERSION} \
+		--runtime-version=${RUNTIME_VERSION} \
+		--region ${REGION} \
+		--stream-logs \
+    --scale-tier CUSTOM \
+    --master-machine-type n1-standard-16
 
 # ----------------------------------
 #      MODEL

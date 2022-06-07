@@ -116,6 +116,20 @@ def get_data():
 
     return (X, y), (X.to_numpy(), y.to_numpy())
 
+def get_data_from_gcp(features_path, target_path):
+    X = pd.read_csv(features_path)
+    y = pd.read_csv(target_path).drop(columns=['longitude', 'latitude'])
+
+    return (X, y), (X.to_numpy(), y.to_numpy())
+
+def remove_masks(X, y):
+  bio_cols = ['bio_1', 'bio_2', 'bio_3', 'bio_4', 'bio_5', 'bio_6', 'bio_7',
+            'bio_8', 'bio_9', 'bio_10', 'bio_11', 'bio_12', 'bio_13',
+            'bio_14', 'bio_15', 'bio_16', 'bio_17', 'bio_18', 'bio_19']
+  mask = (X[bio_cols] > -1000).all(axis=1)
+  return X[mask], y[mask]
+
+
 if __name__ == '__main__':
     # get_gbif_data(csv_file='germany.csv', n=N, num_species=num_species)
 

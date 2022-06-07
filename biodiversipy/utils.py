@@ -304,3 +304,9 @@ def in_berlin(coords_berlin, lat, lon):
     """Returns True if the (lat,lon) are within the bounding box coordinates of Germany"""
 
     return lat <= coords_berlin['lat_upper'] and lat >= coords_berlin['lat_lower'] and lon <= coords_berlin['lon_upper'] and lon >= coords_berlin['lon_lower']
+
+
+def get_ranking(y_true, y_pred):
+    ranking = pd.DataFrame(y_pred, columns=y_true.columns).rank(axis=1) * y_true.reset_index(drop=True)
+    average_ranking = np.nanmean(ranking[ranking > 0])
+    return average_ranking

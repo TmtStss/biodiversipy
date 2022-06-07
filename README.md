@@ -16,7 +16,7 @@
 
 ## Under the Hood
 
-<img src="biodiversipy/data/img/biodiversipy.png"/>
+<img src="biodiversipy/data/img/biodiversipy.jpg"/>
 
 ## Data
 

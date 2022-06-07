@@ -3,6 +3,8 @@
 from random import random
 import numpy as np
 import pandas as pd
+import pickle
+import bz2
 import matplotlib.pyplot as plt
 import os
 from os import path
@@ -10,6 +12,7 @@ from time import time
 from biodiversipy.params import coords_germany, coords_berlin
 from sklearn.feature_extraction.text import CountVectorizer
 from biodiversipy.config import data_sources
+from scipy.sparse import save_npz
 
 #RXR
 
@@ -124,14 +127,15 @@ def merge_dfs(source_path, coords=False, file_sort_fn=None, column_name_extracto
 
 def get_suffix(n, num_species = 0):
     suffix = ''
-    if n < 1_000:
-        suffix = '_' + str(n)
-    elif (n >= 1_000) and (n < 1_000_000):
-        suffix = '_' + str(n // 1_000) + 'k'
-    else:
-        suffix = '_' + str(n // 1_000_000) + 'm'
-    if num_species:
-        suffix = suffix + f'_top{num_species}'
+    if n:
+        if n < 1_000:
+            suffix = '_' + str(n)
+        elif (n >= 1_000) and (n < 1_000_000):
+            suffix = '_' + str(n // 1_000) + 'k'
+        else:
+            suffix = '_' + str(n // 1_000_000) + 'm'
+        if num_species:
+            suffix = suffix + f'_top{num_species}'
     return suffix
 
 def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, num_species = 0, coords=False):
@@ -224,12 +228,30 @@ def append_features(occurrences_path, features_path, from_csv=True):
 
     return df
 
-def encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True):
+def append_features_split(occurrences_path, features):
+    '''
+    Similar to append_features but takes the features as input
+    '''
+    occurrences = pd.read_csv(occurrences_path)
+
+    df = occurrences.conditional_join(features,
+                                 ('latitude', 'lat_lower', '>='),
+                                 ('latitude', 'lat_upper', '<'),
+                                 ('longitude', 'lon_lower', '>='),
+                                 ('longitude', 'lon_upper', '<'),
+                                 how='inner')
+
+    df = df.drop(columns=['lon_lower', 'lon_upper', 'lat_lower', 'lat_upper'])
+
+    return df
+
+def encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True, sparse=False):
     """
     Takes an occurence DataFrame or 'occurrences_n.csv' as input and outputs
     the species encoded and the unique location coordinates as DataFrame or
     csv ('occurrences_n_encoded.csv', 'coordinates_n.csv')
     """
+    print('Reading')
     filename = 'occurrences' + get_suffix(n, num_species) + '.csv'
     source_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n, num_species), filename)
 
@@ -238,42 +260,52 @@ def encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = Tru
     else:
         coordinates = pd.DataFrame(source_path)
 
-    # Create a DataFrame with a coordinates column (latitude, longitude)
-    coordinates['coordinates'] = coordinates[['latitude', 'longitude']].apply(tuple, axis=1)
+    # # Create a DataFrame with a coordinates column (latitude, longitude)
+    # coordinates['coordinates'] = coordinates[['latitude', 'longitude']].apply(tuple, axis=1)
 
     # Convert taxonKey to string for later vectorizing
     coordinates['taxonKey'] = coordinates['taxonKey'].astype('string')
 
+    print('Grouping')
     # Group by coordinates and list the taxonKey's
-    encoded_targets = coordinates.groupby(['coordinates'])['taxonKey'].apply(list)
+    encoded_targets = coordinates.groupby(['latitude', 'longitude'])['taxonKey'].apply(list)
     encoded_targets = pd.DataFrame(encoded_targets)
     idx = encoded_targets.index
 
     # Format taxonKey Pandas Series for vectorizing
     encoded_targets['taxonKey'] = encoded_targets['taxonKey'].map(lambda x: ' '.join(x))
 
+    print('Vectorizing')
     # Initialize CountVectorizer and apply it to the taxonKey's
     vectorizer = CountVectorizer(tokenizer=lambda txt: txt.split())
-    encoded_targets = vectorizer.fit_transform(encoded_targets['taxonKey']).toarray()
+    encoded_targets = vectorizer.fit_transform(encoded_targets['taxonKey'])
+
+    if sparse:
+        out = source_path.replace('.csv', '_encoded')
+        save_npz(out, encoded_targets)
+
+    encoded_targets = encoded_targets.toarray()
 
     # Get feature names out
     encoded_targets = pd.DataFrame(encoded_targets, index=idx, columns = vectorizer.get_feature_names_out())
     encoded_targets.reset_index(inplace=True)
 
     # Merging output of CountVectorizer with latitude and longitude data
-    coordinates = coordinates.drop(columns=['gbifID', 'taxonKey']).drop_duplicates()
-    merged = coordinates.merge(encoded_targets).drop(columns='coordinates')
-    coordinates = coordinates.drop(columns='coordinates')
+    # coordinates = coordinates.drop(columns=['gbifID', 'taxonKey']).drop_duplicates()
+    # merged = coordinates.merge(encoded_targets).drop(columns='coordinates')
+    coordinates = encoded_targets[['latitude', 'longitude']]
 
     if to_csv:
-        encoded_path = source_path.replace('.csv', '_encoded.csv')
-        merged.to_csv(encoded_path, index = False)
+        print('Saving')
+        if not sparse:
+            encoded_path = source_path.replace('.csv', '_encoded.csv')
+            encoded_targets.to_csv(encoded_path, index = False, chunksize=100_000)
 
         coordinates_filename = filename.replace('occurrences', 'coordinates')
         coordinates_path = path.join(raw_data_path, 'gbif', 'occurrences' + get_suffix(n, num_species), coordinates_filename)
-        coordinates.to_csv(coordinates_path, index = False)
+        coordinates.to_csv(coordinates_path, index = False, chunksize=100_000)
 
-    return merged, coordinates
+    return encoded_targets, coordinates
 
 def get_features_for_coordinates(latitude, longitude):
     raw_data_path = path.join(path.dirname(__file__), '..', 'raw_data')

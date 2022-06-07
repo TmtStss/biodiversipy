@@ -13,12 +13,11 @@
   - Remote Sensing
   - Citizen Science
   - Web Development
----
+
 ## Under the Hood
 
-[]('./biodiversipy/data/img/biodiversipy.png')
+<img src="biodiversipy/data/img/biodiversipy.png"/>
 
----
 ## Data
 
 See the following for the data sources details, licenses and disclaimers:
@@ -28,7 +27,6 @@ See the following for the data sources details, licenses and disclaimers:
 - **Bioclimatic data** from [WorldClim](https://worldclim.org/), a database of high spatial resolution global weather and climate data.
 - **Topographic data** from the [NASA SRTM Digital Elevation 30m dataset](https://lpdaac.usgs.gov/products/srtmgl1v003/) accessed via [Google Earth Engine](https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003)
 
----
 ## Biodiversipy Disclaimer
 
 This project and Telegram-bot interface are solely meant for educational and demonstration purposes. The authors cannot be held responsible for the accuracy of the plant species predictions.

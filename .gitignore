@@ -12,3 +12,4 @@ raw_data/
 model.joblib
 .vscode
 *.ipynb
+BQ_API_credentials

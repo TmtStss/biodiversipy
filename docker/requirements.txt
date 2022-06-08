@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pandas
+numpy
+joblib
+google-cloud==0.34.0
+google-cloud-storage==2.3.0
+tensorflow
+fsspec
+gcsfs

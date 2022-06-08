@@ -13,22 +13,19 @@ LOCAL_MODEL_PATH = path.join(path.dirname(__file__), '..', 'model.joblib')
 def init_model(X, y):
     normalization_layer = Normalization()
     normalization_layer.adapt(X)
-    regularizer = l1_l2
+    # regularizer = l1_l2
 
     model = Sequential([
         normalization_layer,
         Dense(100,
-              activation='relu', activity_regularizer = regularizer
-             ),
+              activation='relu'),
         Dropout(0.2),
         Dense(50,
-              activation='relu', activity_regularizer = regularizer
-             ),
+              activation='relu'),
         Dropout(0.2),
         Dense(20,
-              activation='tanh', activity_regularizer = regularizer
-             ),
-        Dense(y.shape[1], activation='softmax'),
+              activation='tanh'),
+        Dense(3615, activation='softmax'),
     ])
 
     lr_schedule = ExponentialDecay(0.001, decay_steps = 5000, decay_rate = 0.95)

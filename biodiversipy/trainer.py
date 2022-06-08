@@ -1,6 +1,7 @@
 import joblib
 import mlflow
 import multiprocessing
+import numpy as np
 
 import warnings
 
@@ -20,9 +21,16 @@ from biodiversipy.params import MLFLOW_EXPERIMENT_BASE, MLFLOW_URI
 from biodiversipy.utils import simple_time_tracker, get_ranking
 from biodiversipy.data import get_data, get_data_from_gcp, remove_masks
 
+import os
+
 ### GCP Storage - - - - - - - - - - - - - - - - - - - - - -
 BUCKET_NAME = "wagon-data-871-biodiversipy"
-BUCKET_TRAIN_DATA_PATH = "xxx"
+# BUCKET_TRAIN_FEATURES_DATA_PATH = "gs://wagon-data-871-biodiversipy/data/raw_data/output/occurrences/coordinates/coordinates_features.csv"
+# BUCKET_TRAIN_TARGETS_DATA_PATH = "gs://wagon-data-871-biodiversipy/data/raw_data/gbif/occurrences/occurrences_encoded.npz"
+
+BUCKET_TRAIN_FEATURES_DATA_PATH = "gs://wagon-data-871-biodiversipy/data/raw_data/output/occurrences/coordinates_100k/coordinates_100k/coordinates_100k_features.csv"
+BUCKET_TRAIN_TARGETS_DATA_PATH = "gs://wagon-data-871-biodiversipy/data/raw_data/gbif/occurrences_100k/occurrences_100k/occurrences_100k_encoded.csv"
+
 
 # model folder name (will contain the folders for all trained model versions)
 MODEL_NAME = "biodiversipy"
@@ -58,17 +66,23 @@ class Trainer(object):
     # @simple_time_tracker
     def train(self):
         # tic = time()
-        es = EarlyStopping(patience=4)
+        es = EarlyStopping(patience=1)
 
         self.model = init_model(self.X_train, self.y_train)
         self.history = self.model.fit(
             self.X_train,
             self.y_train,
-            epochs=1000,
-            batch_size=16,
+            epochs=1,
+            batch_size=128,
             callbacks=[es],
             validation_split=0.2,
             verbose=1)
+        print(os.getcwd())
+        print("FINISHED TRAINING")
+        #joblib.dump(self.model, 'model.joblib')
+        print(colored("model.joblib saved locally", "green"))
+
+        return self.model
 
         # # log to MLFlow
         # self.mlflow_log_metric("train_time", int(time() - tic))
@@ -79,7 +93,7 @@ class Trainer(object):
 
     def score_with_custom_metric(self, X_test, y_test):
         y_pred = self.model.predict(X_test)
-        t_min, average, custom_accuracy = custom_metric(y_test, y_pred, K = 1, rate = 0.95, t = 0.01)
+        t_min, average, custom_accuracy = custom_metric(y_test, y_pred, K = 1, rate = 0.5, t = 0.001)
         print(colored(f'Model custom accuracy  = {custom_accuracy}', "blue"))
         print(colored(f'Model average ranking = {get_ranking(y_test, y_pred)}', "blue"))
 
@@ -97,6 +111,14 @@ class Trainer(object):
         t_min, average, custom_accuracy = custom_metric(y_test, y_base, K = 1, rate = 0.95, t = 0.01)
         print(colored(f'Baseline custom accuracy  = {custom_accuracy}', "blue"))
         print(colored(f'Baseline average ranking = {get_ranking(y_test, y_base)}', "blue"))
+
+    def get_baseline_array(y):
+        '''
+        Takes a one-hot-encoded y,
+        predicts the probability of each species as a proportion of total species.
+        Faster than Sam's code
+        '''
+        return np.sum(y, axis=0) / np.sum(y)
 
     def upload_model_to_gcp():
         client = storage.Client()
@@ -169,11 +191,13 @@ if __name__ == "__main__":
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
     print(colored("## Loading data ##", "blue"))
-    _, (X, y) = get_data_from_gcp(f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}/features.csv",f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}/targets.csv")
-
-
+    X, y = get_data_from_gcp(BUCKET_TRAIN_FEATURES_DATA_PATH, BUCKET_TRAIN_TARGETS_DATA_PATH)
+    print(type(X), X.shape)
+    print(type(y), y.shape)
     X, y = remove_masks(X, y)
 
+    print(f"X type: {type(X)}")
+    print(f"y ype: {type(y)}")
     print(f"X shape: {X.shape}")
     print(f"y shape: {y.shape}")
 
@@ -186,7 +210,7 @@ if __name__ == "__main__":
 
     t = Trainer(X_train, y_train, **default_params)
 
-    print(colored("## Training model... ##", "gree"))
+    print(colored("## Training model... ##", "green"))
     t.train()
 
     print(colored("## Model score with custom metric... ##", "green"))

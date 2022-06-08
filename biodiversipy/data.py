@@ -6,6 +6,8 @@ from sys import argv, exit
 from biodiversipy.utils import merge_dfs, append_features, clean_occurrences, encode_taxonKey, get_suffix
 from biodiversipy.config import data_sources
 from biodiversipy.params import coords_germany
+from scipy.sparse import load_npz
+import numpy as np
 
 # Number of samples
 N = 100_000
@@ -116,11 +118,18 @@ def get_data():
 
     return (X, y), (X.to_numpy(), y.to_numpy())
 
-def get_data_from_gcp(features_path, target_path):
-    X = pd.read_csv(features_path)
-    y = pd.read_csv(target_path).drop(columns=['longitude', 'latitude'])
+from io import BytesIO
+import tensorflow as tf
+import numpy as np
+from tensorflow.python.lib.io import file_io
 
-    return (X, y), (X.to_numpy(), y.to_numpy())
+
+def get_data_from_gcp(features_path_gcp, target_path_gcp):
+    X = pd.read_csv(features_path_gcp)
+    y = pd.read_csv(target_path_gcp)
+    # f = BytesIO(file_io.read_file_to_string(target_path_gcp, binary_mode=True))
+    # y = load_npz(f).toarray()
+    return X, y
 
 def remove_masks(X, y):
   bio_cols = ['bio_1', 'bio_2', 'bio_3', 'bio_4', 'bio_5', 'bio_6', 'bio_7',

@@ -13,8 +13,8 @@ from biodiversipy.config import data_sources
 
 #RXR
 
-import rioxarray as rxr
-import janitor
+# import rioxarray as rxr
+#  import janitor
 
 def simple_time_tracker(method):
     '''Time tracking decorator'''

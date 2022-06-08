@@ -1,55 +1,55 @@
-# packaging
+###----------------- packaging
 pip>=9
 setuptools>=26
 twine==4.0.0
 wheel>=0.29
 
-# data science
-numpy==1.22.4
-pandas==1.4.2
-scikit-learn==1.1.1
+###----------------- data science
+numpy
+pandas
+scikit-learn==1.0.2
 
-# tests/linter
-black==21.12b0
-coverage==6.2
-flake8==4.0.1
-pytest==7.1.2
-yapf==0.32.0
+###----------------- tests/linter
+# black==21.12b0
+# coverage==6.2
+# flake8==4.0.1
+# pytest==7.1.2
+# yapf==0.32.0
 
-# API
-gcsfs==2022.5.0
-google-cloud-storage==2.3.0
+###----------------- API
+gcsfs
+google-cloud-storage
 mlflow==1.22.0
 icrawler
 
-# utilities
+###----------------- utilities
 six>=1.14
 joblib~=1.1.0
 memoized-property==1.0.3
 termcolor==1.1.0
 
-# data-viz
-matplotlib==3.5.2
-matplotlib-inline==0.1.3
-requests==2.27.1
-plotly==5.5.0
-seaborn==0.11.2
+###----------------- data-viz
+# matplotlib==3.5.2
+# matplotlib-inline==0.1.3
+# requests==2.27.1
+# plotly==5.5.0
+# seaborn==0.11.2
 
-# deep learning
-tensorflow==2.7.0
-xgboost==1.5.1
+###----------------- deep learning
+tensorflow==2.8.0
+xgboost==1.5.2
 
-# geospatial
-rasterio==1.2.10
-rioxarray==0.11.1
-OWSLib==0.25.0
+###----------------- geospatial
+# rasterio==1.2.10
+# rioxarray==0.11.1
+# OWSLib==0.25.0
 
-# data manipulation
-pyjanitor==0.23.1
+###----------------- data manipulation
+# pyjanitor==0.23.1
 
-# bot
-python-telegram-bot==20.0a0
+###----------------- bot
+# python-telegram-bot==20.0a0
 
-# frontend
-streamlit==1.10.0
-icrawler==0.6.6
+###----------------- frontend
+# streamlit==1.10.0
+# icrawler==0.6.6

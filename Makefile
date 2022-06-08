@@ -78,13 +78,16 @@ download_data:
 	@test $(path)
 	@gsutil cp -r gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_FOLDER}/$(path) $(path)
 
+test_download:
+	@gsutil cp -r gs://wagon-data-871-biodiversipy/data/raw_data/gbif/occurrences/occurrences_encoded.npz raw_data/gbif/occurrences/occurrences_encoded.npz
+
 ### GCP AI Platform - - - - - - - - - - - - - - - - - - - -
 
 ##### Machine configuration - - - - - - - - - - - - - - - -
 
 REGION=europe-west1
 
-PYTHON_VERSION=3.8
+PYTHON_VERSION=3.7
 FRAMEWORK=TensorFlow
 RUNTIME_VERSION=2.7
 
@@ -95,19 +98,20 @@ FILENAME=trainer
 
 ##### Job - - - - - - - - - - - - - - - - - - - - - - - - -
 
-JOB_NAME=complex_taxi_fare_training_pipeline_$(shell date +'%Y%m%d_%H%M%S')
+JOB_NAME=biodiversipy_training_pipeline_$(shell date +'%Y%m%d_%H%M%S')
 
 gcp_submit_training:
 	gcloud ai-platform jobs submit training ${JOB_NAME} \
-		--job-dir gs://${BUCKET_NAME}/${BUCKET_TRAINING_FOLDER} \
+		--job-dir gs://${GCP_BUCKET_NAME}/${GCP_BUCKET_TRAINING_FOLDER} \
 		--package-path ${PACKAGE_NAME} \
 		--module-name ${PACKAGE_NAME}.${FILENAME} \
 		--python-version=${PYTHON_VERSION} \
 		--runtime-version=${RUNTIME_VERSION} \
 		--region ${REGION} \
 		--stream-logs \
-    --scale-tier CUSTOM \
-    --master-machine-type n1-standard-16
+    --scale-tier custom \
+		--master-machine-type n1-highmem-96
+
 
 # ----------------------------------
 #      MODEL

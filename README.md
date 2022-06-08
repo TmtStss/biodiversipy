@@ -1,74 +1,36 @@
-# Data analysis
-- Document here the project: biodiversipy
-- Description: Project Description
-- Data Source:
-- Type of analysis:
+# Biodiversipy
 
-Please document the project the better you can.
+## Overview
 
-# Startup the project
+- a [Telegram-bot]() (until July11, 2022) taking any location in Germany as input and returning a prediction for the 5 plant species most likely present at that location.
+- a student project by @[TmtStss](https://github.com/TmtStss), @[MikkelValdemar](https://github.com/TmtStss/biodiversipy/commits?author=MikkelValdemar), @[massierc](https://github.com/massierc), and @[ElCheckler](https://github.com/ElCheckler) as part of [Le Wagon Full-Time Data Science Bootcamp in Berlin](https://www.lewagon.com/berlin/data-science-course/full-time) (batch #871, April-June 2022).
+- Two GitHub repositories
+  - [/TmtStss/biodiversipy](https://github.com/TmtStss/biodiversipy): source code (Python) and notebooks for data collection and model training.
+  - [/massierc/biodiversipy-bot](https://github.com/massierc/biodiversipy-bot): source code for the Telegram-bot
 
-The initial setup.
+- A simple showcase for the integration of:
+  - Data Science
+  - Remote Sensing
+  - Citizen Science
+  - Web Development
 
-Create virtualenv and install the project:
-```bash
-sudo apt-get install virtualenv python-pip python-dev
-deactivate; virtualenv ~/venv ; source ~/venv/bin/activate ;\
-    pip install pip -U; pip install -r requirements.txt
-```
+## Under the Hood
 
-Unittest test:
-```bash
-make clean install test
-```
+<img src="biodiversipy/data/img/biodiversipy.jpg"/>
 
-Check for biodiversipy in gitlab.com/{group}.
-If your project is not set please add it:
+## Data
 
-- Create a new project on `gitlab.com/{group}/biodiversipy`
-- Then populate it:
+See the following for the data sources details, licenses and disclaimers:
 
-```bash
-##   e.g. if group is "{group}" and project_name is "biodiversipy"
-git remote add origin git@github.com:{group}/biodiversipy.git
-git push -u origin master
-git push -u origin --tags
-```
+- **Plant species occurences** from the [Global Biodiversity Information Facility (GBIF)](https://www.gbif.org/), an international network and data infrastructure aimed at providing anyone, anywhere, open access to data about all types of life on Earth. Many Citizen Science initiatives lie at the source of GBIF datasets.
+- **Soil data** from [Soilgrids](https://soilgrids.org/), a system for digital soil mapping based on a global compilation of soil profile data and environmental layers.
+- **Bioclimatic data** from [WorldClim](https://worldclim.org/), a database of high spatial resolution global weather and climate data.
+- **Topographic data** from the [NASA SRTM Digital Elevation 30m dataset](https://lpdaac.usgs.gov/products/srtmgl1v003/) accessed via [Google Earth Engine](https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003)
 
-Functionnal test with a script:
+## Biodiversipy Disclaimer
 
-```bash
-cd
-mkdir tmp
-cd tmp
-biodiversipy-run
-```
+This project and Telegram-bot interface are solely meant for educational and demonstration purposes. The authors cannot be held responsible for the accuracy of the plant species predictions.
 
-# Install
+This project is an example user application of the broader (and very active) research field of predicting plant (or animal) species distribution maps.
 
-Go to `https://github.com/{group}/biodiversipy` to see the project, manage issues,
-setup you ssh public key, ...
-
-Create a python3 virtualenv and activate it:
-
-```bash
-sudo apt-get install virtualenv python-pip python-dev
-deactivate; virtualenv -ppython3 ~/venv ; source ~/venv/bin/activate
-```
-
-Clone the project and install it:
-
-```bash
-git clone git@github.com:{group}/biodiversipy.git
-cd biodiversipy
-pip install -r requirements.txt
-make clean install test                # install and test
-```
-Functionnal test with a script:
-
-```bash
-cd
-mkdir tmp
-cd tmp
-biodiversipy-run
-```
+This project was inspired by a [web-application](https://identify.plantnet.org/prediction) using the [AI-GeoSpecies](https://cos4cloud-eosc.eu/services/ai-geospecies/) service developed by the Pl@ntNet team in the framework of the [European Research Cloud](https://cos4cloud-eosc.eu/) based on artificial intelligence algorithms.

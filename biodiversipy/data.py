@@ -167,12 +167,13 @@ def get_complete_occurrences(to_csv=True):
             df = df.merge(df_tmp, how='right')
 
     if to_csv:
+        output_file = occurrences_file + '_features.csv'
         output_path = path.join(raw_data_path, 'output', 'occurrences', \
             occurrences_file)
 
         if not path.isdir(output_path):
             mkdir(output_path)
-
+            
         df.fillna(-3.400000e+38, inplace=True)
 
         df.to_csv(path.join(output_path, occurrences_file + '_features.csv'), index=False)
@@ -189,7 +190,9 @@ def get_data(from_csv=True):
     return (X, y), (X.to_numpy(), y)
 
 if __name__ == '__main__':
+
     get_gbif_data(csv_file='germany.csv', n=N, num_species=num_species, sparse=True)
+
 
     if len(argv) == 1:
         for key, source in data_sources.items():

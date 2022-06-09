@@ -185,6 +185,7 @@ def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, num_species = 0, 
     coordinates = ['latitude', 'longitude']
     data_final = data[gbifID + coordinates + taxonKey]
     metadata = data.drop(columns = coordinates)
+    target_names = metadata[['taxonKey', 'species']].drop_duplicates().sort_values('taxonKey')
 
     # Create output directory
     output_path = path.join(raw_data_path,'gbif', 'occurrences' + suffix)
@@ -201,7 +202,12 @@ def clean_occurrences(raw_data_path, csv='germany.csv', n = 0, num_species = 0, 
     destination_path = path.join(output_path, filename)
     metadata.to_csv(destination_path, index=False)
 
-    return data_final, metadata
+    # Write metadata csv
+    filename = 'target_names.csv'
+    destination_path = path.join(output_path, filename)
+    target_names.to_csv(destination_path, index=False)
+
+    return data_final, metadata, target_names
 
 
 def append_features(occurrences_path, features_path, from_csv=True):

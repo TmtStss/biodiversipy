@@ -35,10 +35,10 @@ def get_gbif_data(csv_file='germany.csv', n=N, num_species = num_species, sparse
     print(f"Cleaning occurrences data...")
     clean_occurrences(raw_data_path, csv_file, n, num_species, coords_germany)
 
-    print(f"Encoding taxonKey...")
-    merged, coordinates = encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True, sparse=sparse)
+    # print(f"Encoding taxonKey...")
+    # merged, coordinates = encode_taxonKey(raw_data_path, n, num_species, from_csv = True, to_csv = True, sparse=sparse)
 
-    return merged, coordinates
+    # return merged, coordinates
 
 def get_tif_data(source, to_csv=True, from_csv=True):
     '''Extract data from tif files'''
@@ -173,7 +173,7 @@ def get_complete_occurrences(to_csv=True):
 
         if not path.isdir(output_path):
             mkdir(output_path)
-            
+
         df.fillna(-3.400000e+38, inplace=True)
 
         df.to_csv(path.join(output_path, occurrences_file + '_features.csv'), index=False)
@@ -194,31 +194,31 @@ if __name__ == '__main__':
     get_gbif_data(csv_file='germany.csv', n=N, num_species=num_species, sparse=True)
 
 
-    if len(argv) == 1:
-        for key, source in data_sources.items():
-            #get_tif_data(source)
-            get_features(source)
+    # if len(argv) == 1:
+    #     for key, source in data_sources.items():
+    #         #get_tif_data(source)
+    #         get_features(source)
 
-        get_complete_occurrences(to_csv=True)
+    #     get_complete_occurrences(to_csv=True)
 
-        exit(0)
+    #     exit(0)
 
-    source_name = argv[1]
+    # source_name = argv[1]
 
-    if source_name not in data_sources.keys():
-        print(f"'{source_name}' received. Expected one of {data_sources.keys()}")
-        exit(0)
+    # if source_name not in data_sources.keys():
+    #     print(f"'{source_name}' received. Expected one of {data_sources.keys()}")
+    #     exit(0)
 
-    get_tif_data(data_sources[source_name])
-    get_features(data_sources[source_name])
+    # get_tif_data(data_sources[source_name])
+    # get_features(data_sources[source_name])
 
-    for source in data_sources:
-        feature_filename = f"{occurrences_file}_{data_sources[source]['name']}_germany.csv"
-        feature_path = path.join(raw_data_path, 'output', 'occurrences', feature_filename)
-        if not path.isfile(feature_path):
-            print(f"Could not find feature file named '{feature_path}'. \nExiting")
-            exit(0)
-        get_complete_occurrences(to_csv=True)
+    # for source in data_sources:
+    #     feature_filename = f"{occurrences_file}_{data_sources[source]['name']}_germany.csv"
+    #     feature_path = path.join(raw_data_path, 'output', 'occurrences', feature_filename)
+    #     if not path.isfile(feature_path):
+    #         print(f"Could not find feature file named '{feature_path}'. \nExiting")
+    #         exit(0)
+    #     get_complete_occurrences(to_csv=True)
 
     # running splits
     # split_occurrences(n_splits=25)

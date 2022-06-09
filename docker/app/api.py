@@ -12,7 +12,7 @@ from fastapi import FastAPI, Request
 storage_client = storage.Client()
 
 bucket_name = 'model-joblib'
-model_name = 'test_model.joblib'
+model_name = 'model.joblib'
 
 bucket = storage_client.get_bucket(bucket_name)
 blob = bucket.blob(model_name)

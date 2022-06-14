@@ -3,7 +3,7 @@
 ## Overview
 
 - a [Telegram-bot]() (until July11, 2022) taking any location in Germany as input and returning a prediction for the 5 plant species most likely present at that location.
-- a student project by @[TmtStss](https://github.com/TmtStss), @[MikkelValdemar](https://github.com/TmtStss/biodiversipy/commits?author=MikkelValdemar), @[massierc](https://github.com/massierc), and @[ElCheckler](https://github.com/ElCheckler) as part of [Le Wagon Full-Time Data Science Bootcamp in Berlin](https://www.lewagon.com/berlin/data-science-course/full-time) (batch #871, April-June 2022).
+- a student project by @[TmtStss](https://github.com/TmtStss), @[MikkelValdemar](https://github.com/TmtStss/biodiversipy/commits?author=MikkelValdemar), @[massierc](https://github.com/massierc), and @[Samuel-Drewes](https://github.com/Samuel-Drewes) as part of [Le Wagon Full-Time Data Science Bootcamp in Berlin](https://www.lewagon.com/berlin/data-science-course/full-time) (batch #871, April-June 2022).
 - Two GitHub repositories
   - [/TmtStss/biodiversipy](https://github.com/TmtStss/biodiversipy): source code (Python) and notebooks for data collection and model training.
   - [/massierc/biodiversipy-bot](https://github.com/massierc/biodiversipy-bot): source code for the Telegram-bot

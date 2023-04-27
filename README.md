@@ -8,7 +8,7 @@
   - [/TmtStss/biodiversipy](https://github.com/TmtStss/biodiversipy): source code (Python) and notebooks for data collection and model training.
   - [/massierc/biodiversipy-bot](https://github.com/massierc/biodiversipy-bot): source code for the Telegram-bot
 
-- A simple showcase for the integration of:
+- A showcase for the integration of:
   - Data Science
   - Remote Sensing
   - Citizen Science
